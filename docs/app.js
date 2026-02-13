@@ -18,6 +18,8 @@ const ROUTE_LABELS = {
   Unknown: 'Not clearly reported'
 };
 
+const ROB_ORDER = ['High risk', 'Some concerns', 'Low risk'];
+
 const DOSE_BAND_LABELS = {
   '0-0.2': '0.0 to 0.2 mcg/kg/h',
   '0.2-0.5': '0.2 to 0.5 mcg/kg/h',
@@ -30,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260213-7';
+const DATA_VERSION = '20260213-8';
 
 const state = {
   trials: [],
@@ -299,27 +301,82 @@ function renderDoseChart() {
   }
 
   const isDark = document.body.classList.contains('theme-dark');
-  const counts = countTrials(state.tableFiltered, (row) => doseBand(row));
-  const keys = DOSE_BAND_ORDER.filter((key) => counts.has(key));
-  const labels = keys.map((key) => doseBandLabel(key));
-  const values = keys.map((key) => counts.get(key));
+  const doseSummary = new Map();
+  const robCategories = new Set();
+
+  state.tableFiltered.forEach((row) => {
+    const band = doseBand(row);
+    const rob = row.rob_overall_std || 'Some concerns';
+    robCategories.add(rob);
+    if (!doseSummary.has(band)) {
+      doseSummary.set(band, { total: 0, robCounts: new Map() });
+    }
+    const bucket = doseSummary.get(band);
+    bucket.total += 1;
+    bucket.robCounts.set(rob, (bucket.robCounts.get(rob) || 0) + 1);
+  });
+
+  const doseKeys = DOSE_BAND_ORDER.filter((key) => doseSummary.has(key));
+  const doseLabels = doseKeys.map((key) => doseBandLabel(key));
+  const totals = doseKeys.map((key) => doseSummary.get(key).total);
+
+  const orderedRobs = ROB_ORDER.filter((rob) => robCategories.has(rob));
+  const extraRobs = [...robCategories].filter((rob) => !ROB_ORDER.includes(rob)).sort((a, b) => a.localeCompare(b));
+  const robKeys = [...orderedRobs, ...extraRobs];
+
+  const robPalette = isDark
+    ? {
+        'High risk': '#ff6b6b',
+        'Some concerns': '#f3d34a',
+        'Low risk': '#53c653'
+      }
+    : {
+        'High risk': '#e63737',
+        'Some concerns': '#f2d100',
+        'Low risk': '#50b848'
+      };
+
+  const traces = robKeys.map((rob) => {
+    const counts = doseKeys.map((band) => doseSummary.get(band).robCounts.get(rob) || 0);
+    const percentages = counts.map((count, index) => {
+      const total = totals[index];
+      return total > 0 ? (count / total) * 100 : 0;
+    });
+    const customdata = counts.map((count, index) => [count, totals[index]]);
+
+    return {
+      type: 'bar',
+      name: rob,
+      x: doseLabels,
+      y: percentages,
+      customdata,
+      marker: { color: robPalette[rob] || (isDark ? '#8bb4d8' : '#5d88b0') },
+      hovertemplate:
+        '<b>%{x}</b><br>Risk of Bias: %{fullData.name}<br>Trials: %{customdata[0]} of %{customdata[1]}<br>Within dose band: %{y:.1f}%<extra></extra>'
+    };
+  });
+
+  const annotations = doseLabels.map((label, index) => ({
+    x: label,
+    y: 103,
+    text: `n=${totals[index]}`,
+    showarrow: false,
+    font: { family: 'IBM Plex Sans, sans-serif', size: 13, color: isDark ? '#d8e7f5' : '#1d3f5e' }
+  }));
 
   window.Plotly.react(
     'dose-chart',
-    [
-      {
-        type: 'bar',
-        x: labels,
-        y: values,
-        marker: { color: isDark ? ['#59c6f2', '#47b8e9', '#39a9df', '#2c9bd4', '#2387bb', '#206f98'] : ['#1f6fb2', '#267ac2', '#2d86cf', '#3493dd', '#74a9d8', '#9cb9d0'] },
-        text: values,
-        textposition: 'outside',
-        cliponaxis: false,
-        hovertemplate: '%{x}<br>%{y} trial(s)<extra></extra>'
-      }
-    ],
+    traces,
     {
-      margin: { l: 28, r: 12, b: 120, t: 24 },
+      barmode: 'stack',
+      margin: { l: 28, r: 12, b: 120, t: 40 },
+      annotations,
+      legend: {
+        title: { text: 'Risk of Bias' },
+        orientation: 'h',
+        x: 0,
+        y: 1.2
+      },
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
       font: { family: 'IBM Plex Sans, sans-serif', color: isDark ? '#d8e7f5' : '#1d3f5e' },
@@ -331,8 +388,9 @@ function renderDoseChart() {
         zeroline: false
       },
       yaxis: {
-        rangemode: 'tozero',
-        dtick: 1,
+        range: [0, 108],
+        ticksuffix: '%',
+        dtick: 25,
         showline: false,
         showgrid: false,
         zeroline: false,
