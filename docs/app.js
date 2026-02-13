@@ -23,13 +23,14 @@ const DOSE_BAND_LABELS = {
   '0.2-0.5': '0.2 to 0.5 mcg/kg/h',
   '0.5-0.8': '0.5 to 0.8 mcg/kg/h',
   '>0.8': 'Above 0.8 mcg/kg/h',
+  bolus_only: 'Bolus only',
   not_reported: 'Infusion not reported',
   not_weight_normalized: 'Infusion not weight-normalized'
 };
 
-const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'not_weight_normalized', 'not_reported'];
+const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260213-6';
+const DATA_VERSION = '20260213-7';
 
 const state = {
   trials: [],
@@ -190,7 +191,10 @@ function normalizeTrial(row) {
 }
 
 function doseBand(trial) {
-  if (trial.infusion_low == null || trial.infusion_high == null) return 'not_reported';
+  if (trial.infusion_low == null || trial.infusion_high == null) {
+    if (trial.bolus_value != null) return 'bolus_only';
+    return 'not_reported';
+  }
   if (!trial.infusion_weight_normalized || trial.infusion_unit !== 'mcg/kg/h') return 'not_weight_normalized';
 
   const midpoint = (trial.infusion_low + trial.infusion_high) / 2;
