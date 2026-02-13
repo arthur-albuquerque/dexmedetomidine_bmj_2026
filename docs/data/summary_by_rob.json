@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-02-13T15:04:17.070686+00:00",
+  "generated_at_utc": "2026-02-13T15:43:30.129409+00:00",
   "low_risk": {
     "n_trials": 14,
     "n_participants": 4916,
@@ -28,14 +28,14 @@
     ],
     "timing_phase_weighted": [
       {
-        "category": "peri_multi",
-        "weighted_n": 3472.0,
-        "weighted_prop": 0.706265
+        "category": "intra_op",
+        "weighted_n": 2993.0,
+        "weighted_prop": 0.608828
       },
       {
-        "category": "intra_op",
-        "weighted_n": 1444.0,
-        "weighted_prop": 0.293735
+        "category": "post_op",
+        "weighted_n": 1923.0,
+        "weighted_prop": 0.391172
       }
     ],
     "route_weighted": [
@@ -101,13 +101,18 @@
     "timing_phase_weighted": [
       {
         "category": "intra_op",
-        "weighted_n": 3602.0,
-        "weighted_prop": 0.591073
+        "weighted_n": 4014.0,
+        "weighted_prop": 0.658681
       },
       {
-        "category": "peri_multi",
-        "weighted_n": 2492.0,
-        "weighted_prop": 0.408927
+        "category": "post_op",
+        "weighted_n": 1428.0,
+        "weighted_prop": 0.234329
+      },
+      {
+        "category": "pre_op",
+        "weighted_n": 652.0,
+        "weighted_prop": 0.10699
       }
     ],
     "route_weighted": [
@@ -157,7 +162,7 @@
         "weighted_prop": 0.827834
       },
       {
-        "category": "peri_multi",
+        "category": "pre_op",
         "weighted_n": 120.0,
         "weighted_prop": 0.172166
       }

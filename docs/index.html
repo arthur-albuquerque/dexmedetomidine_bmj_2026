@@ -22,6 +22,7 @@
           <p class="subtitle">
             Designed for rapid clinical interpretation of how dexmedetomidine was administered across eligible trials.
           </p>
+          <p class="scope-pill">Included comparisons: Dexmedetomidine versus placebo or saline</p>
           <p class="citation">
             Source review: <em>Effectiveness of drug interventions to prevent delirium after surgery for older adults: systematic review and network meta-analysis of randomised controlled trials</em>.<br />
             Luney et al., 2026. DOI:
@@ -35,6 +36,10 @@
             <span id="trials-total" class="stat-value">-</span>
             <span class="stat-label">Filtered Trials</span>
           </article>
+          <article class="stat-card accent-pre">
+            <span id="trials-pre" class="stat-value">-</span>
+            <span class="stat-label">Pre-operatively</span>
+          </article>
           <article class="stat-card accent-intra">
             <span id="trials-intra" class="stat-value">-</span>
             <span class="stat-label">Intra-operatively</span>
@@ -42,10 +47,6 @@
           <article class="stat-card accent-post">
             <span id="trials-post" class="stat-value">-</span>
             <span class="stat-label">Post-operatively</span>
-          </article>
-          <article class="stat-card accent-pre">
-            <span id="trials-pre" class="stat-value">-</span>
-            <span class="stat-label">Pre-operatively</span>
           </article>
           <article class="stat-card context-card">
             <span id="participants-total" class="stat-value">-</span>
@@ -67,8 +68,6 @@
           <h2>Filter Trials</h2>
           <button id="reset-filters" class="secondary-btn" type="button">Clear all filters</button>
         </div>
-
-        <div id="timing-pills" class="timing-pills" role="group" aria-label="Quick timing filters"></div>
 
         <div class="filters-grid">
           <label>
@@ -115,13 +114,11 @@
       <section class="panel chart-grid" aria-label="Dose and timing charts">
         <article>
           <h2>Infusion Dose Bands</h2>
-          <p class="chart-subtitle">Number of trials in each dose band.</p>
           <div id="dose-chart" class="chart"></div>
         </article>
 
         <article>
           <h2>Timing of Dexmedetomidine Administration</h2>
-          <p class="chart-subtitle">Number of trials by timing category.</p>
           <div id="timing-chart" class="chart"></div>
         </article>
       </section>
@@ -141,7 +138,6 @@
                 <th>Infusion</th>
                 <th>Timing of intervention</th>
                 <th>Route</th>
-                <th>Reporting notes</th>
               </tr>
             </thead>
             <tbody id="trials-body"></tbody>
@@ -149,27 +145,26 @@
         </div>
       </section>
 
-      <section class="panel" aria-label="Data quality summary">
-        <h2>Data Completeness Snapshot</h2>
-        <div class="qa-grid">
-          <article>
-            <h3>Trials with missing dose components</h3>
-            <p id="qa-flags">-</p>
-          </article>
-          <article>
-            <h3>Trials flagged as high risk of bias</h3>
-            <p id="qa-critical">-</p>
-          </article>
-          <article>
-            <h3>Outstanding critical data issues</h3>
-            <p id="qa-unresolved">-</p>
-          </article>
-          <article>
-            <h3>Most common route</h3>
-            <p id="qa-route">-</p>
-          </article>
-        </div>
-      </section>
+      <footer class="app-footer" aria-label="App attribution">
+        <p>This app was built by Arthur M. Albuquerque, MD, using GPT-5.3-Codex.</p>
+        <p class="source-line">
+          Source code:
+          <a
+            class="source-link"
+            href="https://github.com/arthur-albuquerque/dexmedetomidine_bmj_2026"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View source code on GitHub"
+          >
+            <svg class="github-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49C3.78 14.2 3.31 12.73 3.31 12.73c-.36-.92-.88-1.16-.88-1.16-.72-.5.06-.49.06-.49.79.06 1.21.82 1.21.82.71 1.2 1.87.86 2.33.66.07-.52.28-.86.5-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.88.31-1.59.82-2.16-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82A7.5 7.5 0 0 1 8 3.8c.68 0 1.37.09 2.01.26 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.57.82 1.28.82 2.16 0 3.07-1.87 3.75-3.65 3.95.29.25.54.74.54 1.49 0 1.08-.01 1.95-.01 2.21 0 .21.14.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+              />
+            </svg>
+          </a>
+        </p>
+      </footer>
     </main>
 
     <script type="module" src="./app.js"></script>

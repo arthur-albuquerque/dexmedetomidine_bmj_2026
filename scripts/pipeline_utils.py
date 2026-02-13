@@ -267,21 +267,28 @@ def adjust_implausible_dex_units(parsed_dose: ParsedDose) -> tuple[ParsedDose, l
 
 
 def classify_timing_phase(timing_raw: str, intervention_text: str) -> str:
-    """Map free text timing descriptions to canonical timing phase."""
-    text = f"{clean_text(timing_raw)} {clean_text(intervention_text)}".lower()
-    has_pre = any(token in text for token in ["prior", "before", "pre", "induction"])
-    has_intra = any(token in text for token in ["during", "intra", "surgery"])
-    has_post = any(token in text for token in ["after", "post", "recovery", "icu", "pca"])
+    """Map free-text timing descriptions to canonical timing phase.
 
-    total_true = sum([has_pre, has_intra, has_post])
-    if total_true > 1:
-        return "peri_multi"
-    if has_pre:
-        return "pre_op"
-    if has_intra:
-        return "intra_op"
-    if has_post:
+    Priority:
+    1) Use the structured timing column from the supplementary table.
+    2) Fall back to intervention text only if timing_raw is empty/uninformative.
+    """
+    timing_text = clean_text(timing_raw).lower()
+    if timing_text:
+        if any(token in timing_text for token in ["after", "post", "recovery", "complete"]):
+            return "post_op"
+        if any(token in timing_text for token in ["prior", "before", "pre", "start of surgery"]):
+            return "pre_op"
+        if any(token in timing_text for token in ["during", "intra", "surgery"]):
+            return "intra_op"
+
+    text = clean_text(intervention_text).lower()
+    if any(token in text for token in ["after", "post", "recovery", "icu", "pca"]):
         return "post_op"
+    if any(token in text for token in ["prior", "before", "pre", "induction"]):
+        return "pre_op"
+    if any(token in text for token in ["during", "intra", "surgery"]):
+        return "intra_op"
     return "unknown"
 
 

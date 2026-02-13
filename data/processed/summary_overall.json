@@ -36,14 +36,19 @@
   ],
   "timing_phase_weighted": [
     {
-      "category": "peri_multi",
-      "weighted_n": 6084.0,
-      "weighted_prop": 0.519689
+      "category": "intra_op",
+      "weighted_n": 7584.0,
+      "weighted_prop": 0.647818
     },
     {
-      "category": "intra_op",
-      "weighted_n": 5623.0,
-      "weighted_prop": 0.480311
+      "category": "post_op",
+      "weighted_n": 3351.0,
+      "weighted_prop": 0.286239
+    },
+    {
+      "category": "pre_op",
+      "weighted_n": 772.0,
+      "weighted_prop": 0.065943
     }
   ],
   "route_weighted": [
@@ -69,5 +74,5 @@
     "q3": 0.5,
     "n_trials": 35
   },
-  "generated_at_utc": "2026-02-13T15:04:17.069449+00:00"
+  "generated_at_utc": "2026-02-13T15:43:30.128909+00:00"
 }

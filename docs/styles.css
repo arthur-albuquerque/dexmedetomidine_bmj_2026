@@ -68,6 +68,17 @@ h1 {
   max-width: 72ch;
 }
 
+.scope-pill {
+  display: inline-block;
+  margin: 0.58rem 0 0;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #eef7ff;
+  font-size: 0.83rem;
+}
+
 .citation {
   margin: 0.72rem 0 0;
   font-size: 0.84rem;
@@ -195,34 +206,9 @@ select {
 
 input:focus,
 select:focus,
-.secondary-btn:focus,
-.pill-btn:focus {
+.secondary-btn:focus {
   outline: 3px solid rgba(31, 111, 178, 0.24);
   outline-offset: 2px;
-}
-
-.timing-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.pill-btn {
-  min-height: 42px;
-  border-radius: 999px;
-  border: 1px solid #c9dced;
-  background: #f8fbff;
-  color: #244767;
-  padding: 0.46rem 0.86rem;
-  font: inherit;
-  font-size: 0.84rem;
-  cursor: pointer;
-}
-
-.pill-btn.active {
-  border-color: var(--brand);
-  background: var(--brand);
-  color: #ffffff;
 }
 
 .chart-grid {
@@ -305,28 +291,40 @@ tbody tr:nth-child(even) {
   font-weight: 700;
 }
 
-.qa-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.65rem;
-}
-
-.qa-grid article {
+.app-footer {
+  margin: 1rem 0 0.4rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 0.67rem;
+  background: rgba(255, 255, 255, 0.78);
+  color: #2f5172;
+  font-size: 0.84rem;
 }
 
-.qa-grid h3 {
-  margin: 0 0 0.26rem;
-  color: #3d5e7b;
-  font-size: 0.94rem;
-}
-
-.qa-grid p {
+.app-footer p {
   margin: 0;
-  font-size: 1.13rem;
-  font-weight: 700;
+}
+
+.source-line {
+  margin-top: 0.35rem !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  color: #16324b;
+}
+
+.source-link:hover {
+  color: #1f6fb2;
+}
+
+.github-icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 @media (max-width: 1180px) {
@@ -334,8 +332,7 @@ tbody tr:nth-child(even) {
     grid-template-columns: 1fr;
   }
 
-  .chart-grid,
-  .qa-grid {
+  .chart-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -346,7 +343,6 @@ tbody tr:nth-child(even) {
 
 @media (max-width: 740px) {
   .chart-grid,
-  .qa-grid,
   .filters-grid {
     grid-template-columns: 1fr;
   }

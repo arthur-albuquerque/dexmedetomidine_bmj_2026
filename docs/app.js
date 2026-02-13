@@ -2,11 +2,10 @@ const TIMING_LABELS = {
   pre_op: 'Pre-operatively',
   intra_op: 'Intra-operatively',
   post_op: 'Post-operatively',
-  peri_multi: 'Across peri-operative phases',
   unknown: 'Timing not clearly reported'
 };
 
-const TIMING_ORDER = ['intra_op', 'post_op', 'pre_op', 'peri_multi', 'unknown'];
+const TIMING_ORDER = ['pre_op', 'intra_op', 'post_op'];
 
 const ROUTE_LABELS = {
   IV: 'Intravenous',
@@ -30,20 +29,9 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'not_weight_normalized', 'not_reported'];
 
-const NOTE_LABELS = {
-  bolus_missing: 'Bolus dose not reported',
-  infusion_missing: 'Infusion dose not reported',
-  rob_missing_defaulted: 'RoB2 category defaulted from source',
-  rob_unmatched_defaulted: 'RoB2 mapping unavailable',
-  manual_adjudication_applied: 'Manual adjudication applied',
-  dose_unit_mg_interpreted_as_mcg: 'Source unit interpreted as mcg',
-  infusion_unit_mg_interpreted_as_mcg: 'Source infusion unit interpreted as mcg'
-};
-
 const state = {
   trials: [],
   filtered: [],
-  validation: null,
   filters: {
     search: '',
     rob: 'all',
@@ -54,7 +42,7 @@ const state = {
 };
 
 function timingLabel(value) {
-  return TIMING_LABELS[value] || value;
+  return TIMING_LABELS[value] || 'Timing not clearly reported';
 }
 
 function routeLabel(value) {
@@ -114,12 +102,6 @@ function formatInfusion(row) {
   return `${row.infusion_low} to ${row.infusion_high} ${row.infusion_unit || ''}`.trim();
 }
 
-function formatReportingNotes(flags) {
-  if (!flags || flags.length === 0) return 'No additional notes';
-  const labels = flags.map((flag) => NOTE_LABELS[flag] || flag.replaceAll('_', ' '));
-  return labels.join('; ');
-}
-
 function robClass(rob) {
   if (rob === 'Low risk') return 'rob-low';
   if (rob === 'High risk') return 'rob-high';
@@ -153,29 +135,13 @@ function renderStats() {
   document.getElementById('trials-intra').textContent = String(intraTrials);
   document.getElementById('trials-post').textContent = String(postTrials);
   document.getElementById('trials-pre').textContent = String(preTrials);
-
-  const doseMissing = state.filtered.filter(
-    (row) => row.validation_flags.includes('bolus_missing') || row.validation_flags.includes('infusion_missing')
-  ).length;
-  const highRiskTrials = state.filtered.filter((row) => row.rob_overall_std === 'High risk').length;
-
-  document.getElementById('qa-flags').textContent = String(doseMissing);
-  document.getElementById('qa-critical').textContent = String(highRiskTrials);
-  document.getElementById('qa-unresolved').textContent = String(state.validation?.n_unresolved_critical ?? 0);
-
-  const routeCounts = countTrials(state.filtered, (row) => row.route_std);
-  const sortedRoutes = [...routeCounts.entries()].sort((a, b) => b[1] - a[1]);
-  const topRoute = sortedRoutes[0];
-  document.getElementById('qa-route').textContent = topRoute
-    ? `${routeLabel(topRoute[0])} (${topRoute[1]} trial${topRoute[1] === 1 ? '' : 's'})`
-    : 'Not available';
 }
 
 function renderDoseChart() {
   const counts = countTrials(state.filtered, (row) => doseBand(row));
-
-  const labels = DOSE_BAND_ORDER.filter((key) => counts.has(key)).map((key) => doseBandLabel(key));
-  const values = DOSE_BAND_ORDER.filter((key) => counts.has(key)).map((key) => counts.get(key));
+  const keys = DOSE_BAND_ORDER.filter((key) => counts.has(key));
+  const labels = keys.map((key) => doseBandLabel(key));
+  const values = keys.map((key) => counts.get(key));
 
   Plotly.react(
     'dose-chart',
@@ -191,15 +157,16 @@ function renderDoseChart() {
       }
     ],
     {
-      margin: { l: 52, r: 12, b: 82, t: 10 },
+      margin: { l: 48, r: 12, b: 84, t: 10 },
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
       font: { family: 'IBM Plex Sans, sans-serif', color: '#1d3f5e' },
       yaxis: {
-        title: 'Number of trials',
         rangemode: 'tozero',
         dtick: 1,
-        gridcolor: '#e5eef7'
+        gridcolor: '#e5eef7',
+        showticklabels: false,
+        ticks: ''
       }
     },
     { responsive: true, displayModeBar: false }
@@ -227,15 +194,16 @@ function renderTimingChart() {
       }
     ],
     {
-      margin: { l: 180, r: 15, b: 40, t: 10 },
+      margin: { l: 185, r: 15, b: 40, t: 10 },
       paper_bgcolor: 'transparent',
       plot_bgcolor: 'transparent',
       font: { family: 'IBM Plex Sans, sans-serif', color: '#1d3f5e' },
       xaxis: {
-        title: 'Number of trials',
         rangemode: 'tozero',
         dtick: 1,
-        gridcolor: '#e5eef7'
+        gridcolor: '#e5eef7',
+        showticklabels: false,
+        ticks: ''
       }
     },
     { responsive: true, displayModeBar: false }
@@ -256,46 +224,9 @@ function renderTable() {
       <td>${formatInfusion(row)}</td>
       <td>${timingLabel(row.timing_phase)}</td>
       <td>${routeLabel(row.route_std)}</td>
-      <td>${formatReportingNotes(row.validation_flags)}</td>
     `;
     body.appendChild(tr);
   });
-}
-
-function updateTimingPillState() {
-  const buttons = document.querySelectorAll('.pill-btn[data-timing]');
-  buttons.forEach((button) => {
-    const value = button.getAttribute('data-timing');
-    const active = value === state.filters.timing || (value === 'all' && state.filters.timing === 'all');
-    button.classList.toggle('active', active);
-    button.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-}
-
-function renderTimingPills() {
-  const container = document.getElementById('timing-pills');
-  container.innerHTML = '';
-
-  const available = new Set(state.trials.map((row) => row.timing_phase));
-  const quickKeys = ['all', 'intra_op', 'post_op', 'pre_op'];
-
-  quickKeys.forEach((key) => {
-    if (key !== 'all' && !available.has(key)) return;
-
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'pill-btn';
-    button.setAttribute('data-timing', key);
-    button.textContent = key === 'all' ? 'All timing categories' : timingLabel(key);
-    button.addEventListener('click', () => {
-      state.filters.timing = key;
-      document.getElementById('timing-filter').value = key;
-      rerender();
-    });
-    container.appendChild(button);
-  });
-
-  updateTimingPillState();
 }
 
 function rerender() {
@@ -304,7 +235,6 @@ function rerender() {
   renderDoseChart();
   renderTimingChart();
   renderTable();
-  updateTimingPillState();
 }
 
 function bindFilter(id, key) {
@@ -325,13 +255,8 @@ function populateSelect(id, values, labeler) {
 }
 
 async function init() {
-  const [trialsRaw, validation] = await Promise.all([
-    fetch('./data/trials_curated.json').then((response) => response.json()),
-    fetch('./data/validation_report.json').then((response) => response.json())
-  ]);
-
+  const trialsRaw = await fetch('./data/trials_curated.json').then((response) => response.json());
   state.trials = trialsRaw.map((row) => normalizeTrial(row));
-  state.validation = validation;
 
   const robValues = [...new Set(state.trials.map((row) => row.rob_overall_std))].sort();
   const timingValues = TIMING_ORDER.filter((key) => state.trials.some((row) => row.timing_phase === key));
@@ -357,7 +282,6 @@ async function init() {
     rerender();
   });
 
-  renderTimingPills();
   rerender();
 }
 

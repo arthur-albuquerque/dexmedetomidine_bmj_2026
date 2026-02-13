@@ -49,12 +49,19 @@ class PipelineUtilsTests(unittest.TestCase):
         self.assertEqual(dose.infusion_unit, "mcg/h")
         self.assertFalse(dose.infusion_weight_normalized)
 
-    def test_timing_phase_multi(self) -> None:
+    def test_timing_phase_uses_structured_timing_first(self) -> None:
         phase = classify_timing_phase(
             timing_raw="During surgery",
             intervention_text="continued up to 2 hours in recovery",
         )
-        self.assertEqual(phase, "peri_multi")
+        self.assertEqual(phase, "intra_op")
+
+    def test_timing_phase_postop(self) -> None:
+        phase = classify_timing_phase(
+            timing_raw="After surgery complete",
+            intervention_text="Dexmedetomidine infusion",
+        )
+        self.assertEqual(phase, "post_op")
 
     def test_comparator_classifier(self) -> None:
         include_terms = ["saline", "placebo", "equivolume saline", "usual care", "sham"]
