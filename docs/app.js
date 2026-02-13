@@ -29,6 +29,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
+const DATA_VERSION = '20260213-6';
 
 const state = {
   trials: [],
@@ -478,7 +479,9 @@ function initializeTheme() {
 }
 
 async function init() {
-  const trialsRaw = await fetch('./data/trials_curated.json').then((response) => response.json());
+  const trialsRaw = await fetch(`./data/trials_curated.json?v=${DATA_VERSION}`).then((response) =>
+    response.json()
+  );
   state.trials = trialsRaw.map((row) => normalizeTrial(row));
 
   const robValues = [...new Set(state.trials.map((row) => row.rob_overall_std))].sort((a, b) => a.localeCompare(b));
