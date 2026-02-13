@@ -10,8 +10,8 @@
   "dose_bands_weighted": [
     {
       "category": "not_weight_normalized",
-      "weighted_n": 4439.0,
-      "weighted_prop": 0.387111
+      "weighted_n": 3727.0,
+      "weighted_prop": 0.32502
     },
     {
       "category": "0-0.2",
@@ -24,14 +24,14 @@
       "weighted_prop": 0.279934
     },
     {
+      "category": ">0.8",
+      "weighted_n": 887.0,
+      "weighted_prop": 0.077352
+    },
+    {
       "category": "0.5-0.8",
       "weighted_n": 333.0,
       "weighted_prop": 0.02904
-    },
-    {
-      "category": ">0.8",
-      "weighted_n": 175.0,
-      "weighted_prop": 0.015261
     }
   ],
   "timing_phase_weighted": [
@@ -77,7 +77,7 @@
     "median": 0.4,
     "q1": 0.2,
     "q3": 0.5,
-    "n_trials": 35
+    "n_trials": 36
   },
-  "generated_at_utc": "2026-02-13T19:59:25.667435+00:00"
+  "generated_at_utc": "2026-02-13T20:35:13.827675+00:00"
 }

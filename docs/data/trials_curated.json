@@ -467,8 +467,8 @@
     "bolus_unit": null,
     "infusion_low": 1.25,
     "infusion_high": 1.25,
-    "infusion_unit": "mcg/h",
-    "infusion_weight_normalized": false,
+    "infusion_unit": "mcg/kg/h",
+    "infusion_weight_normalized": true,
     "timing_raw": "After surgery complete",
     "timing_phase": "post_op",
     "route_raw": "IV",
@@ -477,7 +477,8 @@
     "rob_overall_std": "Low risk",
     "extraction_confidence": 0.85,
     "validation_flags": [
-      "bolus_missing"
+      "bolus_missing",
+      "manual_adjudication_applied"
     ],
     "source_page": 4,
     "source_file": "data/raw/delirium_list_of_articles.pdf",

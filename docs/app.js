@@ -105,7 +105,8 @@ function setupCheckboxPopoverFilter({
   labeler,
   stateGroup,
   stateKey,
-  allLabel
+  allLabel,
+  onChange
 }) {
   const details = document.getElementById(id);
   if (!details) return () => {};
@@ -150,6 +151,9 @@ function setupCheckboxPopoverFilter({
         checkboxNodes.filter((node) => node.checked).map((node) => node.value)
       );
       stateGroup[stateKey] = values.filter((value) => selectedSet.has(value));
+      if (typeof onChange === 'function') {
+        onChange();
+      }
       syncFromState();
       rerender();
     });
@@ -485,33 +489,50 @@ async function init() {
   const bolusValues = [...new Set(state.trials.map((row) => formatBolus(row)))].sort((a, b) => a.localeCompare(b));
   const infusionValues = [...new Set(state.trials.map((row) => formatInfusion(row)))].sort((a, b) => a.localeCompare(b));
   const doseValues = DOSE_BAND_ORDER;
+  const refreshById = {};
+  const registerPopover = (name, config) => {
+    const refresh = setupCheckboxPopoverFilter(config);
+    refreshById[name] = refresh;
+    return refresh;
+  };
+  const syncSharedFiltersToTable = () => {
+    state.tableFilters.rob = [...state.filters.rob];
+    state.tableFilters.timing = [...state.filters.timing];
+    state.tableFilters.route = [...state.filters.route];
+    if (refreshById.tblRob) refreshById.tblRob();
+    if (refreshById.tblTiming) refreshById.tblTiming();
+    if (refreshById.tblRoute) refreshById.tblRoute();
+  };
 
   const refreshPopoverUIs = [
-    setupCheckboxPopoverFilter({
+    registerPopover('rob', {
       id: 'rob-filter',
       values: robValues,
       labeler: (value) => value,
       stateGroup: state.filters,
       stateKey: 'rob',
-      allLabel: 'All risk categories'
+      allLabel: 'All risk categories',
+      onChange: syncSharedFiltersToTable
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('timing', {
       id: 'timing-filter',
       values: timingValues,
       labeler: (value) => timingLabel(value),
       stateGroup: state.filters,
       stateKey: 'timing',
-      allLabel: 'All timing categories'
+      allLabel: 'All timing categories',
+      onChange: syncSharedFiltersToTable
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('route', {
       id: 'route-filter',
       values: routeValues,
       labeler: (value) => routeLabel(value),
       stateGroup: state.filters,
       stateKey: 'route',
-      allLabel: 'All routes'
+      allLabel: 'All routes',
+      onChange: syncSharedFiltersToTable
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('dose', {
       id: 'dose-filter',
       values: doseValues,
       labeler: (value) => doseBandLabel(value),
@@ -519,7 +540,7 @@ async function init() {
       stateKey: 'dose',
       allLabel: 'All dose bands'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblStudy', {
       id: 'tbl-filter-study',
       values: studyValues,
       labeler: (value) => value,
@@ -527,7 +548,7 @@ async function init() {
       stateKey: 'study',
       allLabel: 'All studies'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblCountry', {
       id: 'tbl-filter-country',
       values: countryValues,
       labeler: (value) => value,
@@ -535,7 +556,7 @@ async function init() {
       stateKey: 'country',
       allLabel: 'All countries'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblRob', {
       id: 'tbl-filter-rob',
       values: robValues,
       labeler: (value) => value,
@@ -543,7 +564,7 @@ async function init() {
       stateKey: 'rob',
       allLabel: 'All risk categories'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblBolus', {
       id: 'tbl-filter-bolus',
       values: bolusValues,
       labeler: (value) => value,
@@ -551,7 +572,7 @@ async function init() {
       stateKey: 'bolus',
       allLabel: 'All bolus values'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblInfusion', {
       id: 'tbl-filter-infusion',
       values: infusionValues,
       labeler: (value) => value,
@@ -559,7 +580,7 @@ async function init() {
       stateKey: 'infusion',
       allLabel: 'All infusion values'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblTiming', {
       id: 'tbl-filter-timing',
       values: timingValues,
       labeler: (value) => timingLabel(value),
@@ -567,7 +588,7 @@ async function init() {
       stateKey: 'timing',
       allLabel: 'All timing categories'
     }),
-    setupCheckboxPopoverFilter({
+    registerPopover('tblRoute', {
       id: 'tbl-filter-route',
       values: routeValues,
       labeler: (value) => routeLabel(value),

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-02-13T19:59:25.668128+00:00",
+  "generated_at_utc": "2026-02-13T20:35:13.828325+00:00",
   "low_risk": {
     "n_trials": 14,
     "n_participants": 4916,
@@ -11,19 +11,24 @@
     },
     "dose_bands_weighted": [
       {
-        "category": "not_weight_normalized",
-        "weighted_n": 2070.0,
-        "weighted_prop": 0.421074
-      },
-      {
         "category": "0-0.2",
         "weighted_n": 1731.0,
         "weighted_prop": 0.352116
       },
       {
+        "category": "not_weight_normalized",
+        "weighted_n": 1358.0,
+        "weighted_prop": 0.276241
+      },
+      {
         "category": "0.2-0.5",
         "weighted_n": 1115.0,
         "weighted_prop": 0.22681
+      },
+      {
+        "category": ">0.8",
+        "weighted_n": 712.0,
+        "weighted_prop": 0.144833
       }
     ],
     "timing_phase_weighted": [
@@ -58,8 +63,8 @@
     "infusion_midpoint_distribution": {
       "median": 0.4,
       "q1": 0.2,
-      "q3": 0.4,
-      "n_trials": 9
+      "q3": 0.4375,
+      "n_trials": 10
     }
   },
   "some_concerns": {

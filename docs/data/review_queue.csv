@@ -11,7 +11,7 @@ he_2021_p4,He 2021,Some concerns,bolus_missing;rob_missing_defaulted,,4,data/raw
 he_2022_p4,He 2022,Some concerns,rob_missing_defaulted,,4,data/raw/delirium_list_of_articles.pdf
 he_2023_p4,He 2023,Some concerns,rob_missing_defaulted,,4,data/raw/delirium_list_of_articles.pdf
 he_2024_p4,He 2024,High risk,bolus_missing;infusion_missing,,4,data/raw/delirium_list_of_articles.pdf
-hong_2021_p4,Hong 2021,Low risk,bolus_missing,,4,data/raw/delirium_list_of_articles.pdf
+hong_2021_p4,Hong 2021,Low risk,bolus_missing;manual_adjudication_applied,,4,data/raw/delirium_list_of_articles.pdf
 hu_2021_p4,Hu 2021,Some concerns,rob_missing_defaulted,,4,data/raw/delirium_list_of_articles.pdf
 hu_2022_p5,Hu 2022,Some concerns,bolus_missing;rob_missing_defaulted,,5,data/raw/delirium_list_of_articles.pdf
 huet_2024_p5,Huet 2024,Some concerns,bolus_missing;rob_missing_defaulted,,5,data/raw/delirium_list_of_articles.pdf

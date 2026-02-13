@@ -37,5 +37,12 @@
   "xie_2023": {
     "notes": "Exclude because intervention combines dexmedetomidine with sufentanil.",
     "exclude_trial": true
+  },
+  "hong_2021": {
+    "notes": "Manual correction requested by user.",
+    "infusion_low": 1.25,
+    "infusion_high": 1.25,
+    "infusion_unit": "mcg/kg/h",
+    "infusion_weight_normalized": true
   }
 }
