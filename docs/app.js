@@ -159,6 +159,15 @@ function setupCheckboxPopoverFilter({
   return syncFromState;
 }
 
+function clearFilterStateInPlace() {
+  Object.keys(state.filters).forEach((key) => {
+    state.filters[key] = [];
+  });
+  Object.keys(state.tableFilters).forEach((key) => {
+    state.tableFilters[key] = [];
+  });
+}
+
 function parseFlags(raw) {
   if (Array.isArray(raw)) return raw;
   if (typeof raw === 'string' && raw.trim()) {
@@ -573,9 +582,9 @@ async function init() {
   const resetButton = document.getElementById('reset-filters');
   if (resetButton) {
     resetButton.addEventListener('click', () => {
-      state.filters = { rob: [], timing: [], route: [], dose: [] };
-      state.tableFilters = { study: [], country: [], rob: [], bolus: [], infusion: [], timing: [], route: [] };
+      clearFilterStateInPlace();
       refreshPopoverUIs.forEach((refresh) => refresh());
+      closeAllFilterPopovers();
       rerender();
     });
   }
