@@ -32,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260213-8';
+const DATA_VERSION = '20260213-9';
 
 const state = {
   trials: [],
@@ -338,27 +338,33 @@ function renderDoseChart() {
 
   const traces = robKeys.map((rob) => {
     const counts = doseKeys.map((band) => doseSummary.get(band).robCounts.get(rob) || 0);
-    const percentages = counts.map((count, index) => {
+    const customdata = counts.map((count, index) => {
       const total = totals[index];
-      return total > 0 ? (count / total) * 100 : 0;
+      const percent = total > 0 ? (count / total) * 100 : 0;
+      const roundedPercent = Math.round(percent * 10) / 10;
+      const percentLabel = Number.isInteger(roundedPercent)
+        ? `${roundedPercent.toFixed(0)}%`
+        : `${roundedPercent.toFixed(1)}%`;
+      return [count, total, percentLabel];
     });
-    const customdata = counts.map((count, index) => [count, totals[index]]);
 
     return {
       type: 'bar',
       name: rob,
       x: doseLabels,
-      y: percentages,
+      y: counts,
       customdata,
       marker: { color: robPalette[rob] || (isDark ? '#8bb4d8' : '#5d88b0') },
       hovertemplate:
-        '<b>%{x}</b><br>Risk of Bias: %{fullData.name}<br>Trials: %{customdata[0]} of %{customdata[1]}<br>Within dose band: %{y:.1f}%<extra></extra>'
+        '<b>%{x}</b><br>Risk of Bias: %{fullData.name}<br>Trials %{customdata[0]} of %{customdata[1]} (%{customdata[2]})<extra></extra>'
     };
   });
 
+  const maxTotal = totals.length > 0 ? Math.max(...totals) : 0;
+  const annotationOffset = Math.max(0.2, maxTotal * 0.06);
   const annotations = doseLabels.map((label, index) => ({
     x: label,
-    y: 103,
+    y: totals[index] + annotationOffset,
     text: `n=${totals[index]}`,
     showarrow: false,
     font: { family: 'IBM Plex Sans, sans-serif', size: 13, color: isDark ? '#d8e7f5' : '#1d3f5e' }
@@ -388,14 +394,14 @@ function renderDoseChart() {
         zeroline: false
       },
       yaxis: {
-        range: [0, 108],
-        ticksuffix: '%',
-        dtick: 25,
+        title: { text: 'Number of trials' },
+        rangemode: 'tozero',
+        range: [0, maxTotal + annotationOffset * 3],
+        dtick: 1,
         showline: false,
         showgrid: false,
         zeroline: false,
-        showticklabels: false,
-        ticks: ''
+        showticklabels: true
       }
     },
     { responsive: true, displayModeBar: false }
