@@ -225,9 +225,15 @@ h1 {
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.65rem;
   margin-top: 0.58rem;
+}
+
+.filter-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 label {
@@ -247,6 +253,11 @@ select {
   padding: 0.54rem 0.62rem;
   font: inherit;
   color: var(--ink);
+}
+
+.multi-select {
+  min-height: 118px;
+  padding: 0.35rem 0.45rem;
 }
 
 input:focus,
@@ -276,6 +287,13 @@ select:focus,
   margin: 0 0 0.62rem;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.table-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0.55rem 0 0.75rem;
 }
 
 .table-wrap {
@@ -309,20 +327,6 @@ tbody tr:nth-child(even) {
   background: var(--table-row-alt);
 }
 
-.table-filter-row th {
-  padding: 0.38rem 0.42rem;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.table-filter-row input,
-.table-filter-row select {
-  min-height: 34px;
-  font-size: 0.78rem;
-  padding: 0.35rem 0.45rem;
-}
-
 .rob-pill {
   display: inline-block;
   padding: 0.2rem 0.52rem;
@@ -348,6 +352,17 @@ tbody tr:nth-child(even) {
 
 .study-name {
   font-weight: 700;
+}
+
+.study-link {
+  font-weight: 700;
+  color: var(--brand-dark);
+  text-decoration: none;
+}
+
+.study-link:hover {
+  color: var(--brand);
+  text-decoration: underline;
 }
 
 .app-footer {
@@ -398,11 +413,19 @@ tbody tr:nth-child(even) {
   .filters-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .table-filters-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 740px) {
   .chart-grid,
   .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-filters-grid {
     grid-template-columns: 1fr;
   }
 

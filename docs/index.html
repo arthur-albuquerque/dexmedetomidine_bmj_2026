@@ -71,38 +71,30 @@
           <h2>Filter Trials</h2>
           <button id="reset-filters" class="secondary-btn" type="button">Clear all filters</button>
         </div>
+        <p class="filter-note">You can select multiple categories in each filter.</p>
 
         <div class="filters-grid">
           <label>
-            Search trial text
-            <input id="search" type="text" placeholder="Study, country, dosing text" />
-          </label>
-
-          <label>
             RoB2 overall
-            <select id="rob-filter">
-              <option value="all">All risk categories</option>
+            <select id="rob-filter" class="multi-select" multiple size="4">
             </select>
           </label>
 
           <label>
             Timing of intervention
-            <select id="timing-filter">
-              <option value="all">All timing categories</option>
+            <select id="timing-filter" class="multi-select" multiple size="4">
             </select>
           </label>
 
           <label>
             Route
-            <select id="route-filter">
-              <option value="all">All routes</option>
+            <select id="route-filter" class="multi-select" multiple size="4">
             </select>
           </label>
 
           <label>
             Infusion dose band
-            <select id="dose-filter">
-              <option value="all">All dose bands</option>
+            <select id="dose-filter" class="multi-select" multiple size="6">
               <option value="0-0.2">0.0 to 0.2 mcg/kg/h</option>
               <option value="0.2-0.5">0.2 to 0.5 mcg/kg/h</option>
               <option value="0.5-0.8">0.5 to 0.8 mcg/kg/h</option>
@@ -129,6 +121,38 @@
       <section class="panel" aria-label="Trial table">
         <h2>Trial-Level Details</h2>
         <p class="table-caption">Clinical wording is used for intervention timing to support quick review.</p>
+        <p class="filter-note">You can select multiple categories in each table filter.</p>
+
+        <div class="table-filters-grid">
+          <label>
+            Study
+            <select id="tbl-filter-study" class="multi-select" multiple size="6"></select>
+          </label>
+          <label>
+            Country
+            <select id="tbl-filter-country" class="multi-select" multiple size="6"></select>
+          </label>
+          <label>
+            RoB2
+            <select id="tbl-filter-rob" class="multi-select" multiple size="4"></select>
+          </label>
+          <label>
+            Bolus
+            <select id="tbl-filter-bolus" class="multi-select" multiple size="6"></select>
+          </label>
+          <label>
+            Infusion
+            <select id="tbl-filter-infusion" class="multi-select" multiple size="6"></select>
+          </label>
+          <label>
+            Timing
+            <select id="tbl-filter-timing" class="multi-select" multiple size="4"></select>
+          </label>
+          <label>
+            Route
+            <select id="tbl-filter-route" class="multi-select" multiple size="4"></select>
+          </label>
+        </div>
 
         <div class="table-wrap">
           <table>
@@ -141,27 +165,6 @@
                 <th>Infusion</th>
                 <th>Timing of intervention</th>
                 <th>Route</th>
-              </tr>
-              <tr class="table-filter-row">
-                <th><input id="tbl-filter-study" type="text" placeholder="Filter study" /></th>
-                <th><input id="tbl-filter-country" type="text" placeholder="Filter country" /></th>
-                <th>
-                  <select id="tbl-filter-rob">
-                    <option value="all">All</option>
-                  </select>
-                </th>
-                <th><input id="tbl-filter-bolus" type="text" placeholder="Filter bolus" /></th>
-                <th><input id="tbl-filter-infusion" type="text" placeholder="Filter infusion" /></th>
-                <th>
-                  <select id="tbl-filter-timing">
-                    <option value="all">All</option>
-                  </select>
-                </th>
-                <th>
-                  <select id="tbl-filter-route">
-                    <option value="all">All</option>
-                  </select>
-                </th>
               </tr>
             </thead>
             <tbody id="trials-body"></tbody>

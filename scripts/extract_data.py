@@ -43,6 +43,11 @@ RAW_COLUMNS = [
     "postop_icu_care",
 ]
 
+REFERENCE_HEADER = "References of included trials"
+REFERENCE_START_LINE_PATTERN = re.compile(r"^\s*(\d{1,3})\.\s+(.+)$")
+DOI_URL_PATTERN = re.compile(r"https?://(?:dx\.)?doi\.org/[^\s]+", re.IGNORECASE)
+DOI_VALUE_PATTERN = re.compile(r"\b10\.\d{4,9}/[-._;()/:A-Za-z0-9]+\b")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -169,6 +174,102 @@ def parse_articles_table(pdf_path: Path) -> pd.DataFrame:
     return pd.DataFrame.from_records(records)
 
 
+def parse_reference_number_from_study(study_raw: str) -> int | None:
+    """Extract trailing included-trial reference number from raw study label."""
+    text = clean_text(study_raw)
+    match = re.search(r"(?:19|20)\d{2}(\d{1,3})\s*$", text)
+    if not match:
+        return None
+    ref_no = int(match.group(1))
+    if ref_no <= 0:
+        return None
+    return ref_no
+
+
+def parse_reference_entries(pdf_path: Path) -> dict[int, str]:
+    """Parse numbered entries under 'References of included trials' from the PDF."""
+    lines: list[str] = []
+    in_reference_section = False
+
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text() or ""
+            if REFERENCE_HEADER in page_text:
+                in_reference_section = True
+            if in_reference_section:
+                for line in page_text.splitlines():
+                    text = clean_text(line)
+                    if not text:
+                        continue
+                    if REFERENCE_HEADER in text:
+                        continue
+                    if "Effectiveness of drug interventions to prevent delirium after surgery" in text:
+                        continue
+                    if re.fullmatch(r"\d+", text):
+                        continue
+                    lines.append(text)
+
+    if not lines:
+        return {}
+
+    entries: dict[int, str] = {}
+    current_number: int | None = None
+    current_lines: list[str] = []
+
+    for line in lines:
+        start_match = REFERENCE_START_LINE_PATTERN.match(line)
+        is_reference_start = False
+        if start_match:
+            candidate_text = start_match.group(2).strip()
+            if "," in candidate_text[:80] and not candidate_text.lower().startswith("doi"):
+                is_reference_start = True
+
+        if is_reference_start and start_match:
+            if current_number is not None and current_lines:
+                joined = " ".join(current_lines)
+                joined = re.sub(r"-\s+", "-", joined)
+                joined = re.sub(r"\s+", " ", joined).strip()
+                entries[current_number] = joined
+            current_number = int(start_match.group(1))
+            current_lines = [start_match.group(2).strip()]
+            continue
+
+        if current_number is not None:
+            current_lines.append(line.strip())
+
+    if current_number is not None and current_lines:
+        joined = " ".join(current_lines)
+        joined = re.sub(r"-\s+", "-", joined)
+        joined = re.sub(r"\s+", " ", joined).strip()
+        entries[current_number] = joined
+
+    return entries
+
+
+def extract_reference_url(entry_text: str) -> str:
+    """Extract canonical citation URL from one reference entry."""
+    cleaned = clean_text(entry_text)
+    url_match = DOI_URL_PATTERN.search(cleaned)
+    if url_match:
+        return url_match.group(0).rstrip(".,;)")
+
+    doi_match = DOI_VALUE_PATTERN.search(cleaned)
+    if doi_match:
+        return f"https://doi.org/{doi_match.group(0).rstrip('.,;)')}"
+    return ""
+
+
+def extract_study_urls_by_reference_number(pdf_path: Path) -> dict[int, str]:
+    """Build mapping from included-trial reference number to URL/DOI link."""
+    entries = parse_reference_entries(pdf_path)
+    links: dict[int, str] = {}
+    for ref_no, entry_text in entries.items():
+        url = extract_reference_url(entry_text)
+        if url:
+            links[ref_no] = url
+    return links
+
+
 def parse_rob_table(rob_path: Path) -> tuple[pd.DataFrame, dict[str, str]]:
     workbook = openpyxl.load_workbook(rob_path, data_only=True)
     worksheet = workbook.active
@@ -254,6 +355,7 @@ def build_canonical_rows(
     articles_df: pd.DataFrame,
     rob_df: pd.DataFrame,
     comparator_rules: dict[str, list[str]],
+    study_urls_by_reference_number: dict[int, str],
     fulltext_enrichment: dict[str, dict[str, Any]],
     manual_adjudications: dict[str, dict[str, Any]],
 ) -> tuple[pd.DataFrame, list[str]]:
@@ -273,6 +375,7 @@ def build_canonical_rows(
     for row in dex_candidates.to_dict(orient="records"):
         study_label = clean_study_label(row["study"])
         study_key = normalize_study_key(study_label)
+        study_reference_number = parse_reference_number_from_study(row["study"])
 
         dex_arm_text = extract_dex_arm_text(row["intervention_arm"])
         control_text = clean_text(row["control_arm"])
@@ -372,6 +475,8 @@ def build_canonical_rows(
             {
                 "trial_id": derive_trial_id(study_key, int(row["source_page"])),
                 "study_label": study_label,
+                "study_reference_number": study_reference_number,
+                "study_url": study_urls_by_reference_number.get(study_reference_number or -1, ""),
                 "year": year,
                 "country": clean_text(row["country"]),
                 "n_total": n_total,
@@ -414,6 +519,8 @@ def main() -> None:
     rules = parse_simple_yaml_lists(args.comparator_rules)
     print("[extract] Parsing supplementary trial table PDF...", flush=True)
     articles_df = parse_articles_table(args.articles_pdf)
+    print("[extract] Parsing reference links from supplementary PDF...", flush=True)
+    study_urls_by_reference_number = extract_study_urls_by_reference_number(args.articles_pdf)
     print("[extract] Parsing RoB workbook...", flush=True)
     rob_df, _ = parse_rob_table(args.rob_xlsx)
     print("[extract] Parsing optional full-text trial PDFs...", flush=True)
@@ -426,6 +533,7 @@ def main() -> None:
         articles_df=articles_df,
         rob_df=rob_df,
         comparator_rules=rules,
+        study_urls_by_reference_number=study_urls_by_reference_number,
         fulltext_enrichment=fulltext_enrichment,
         manual_adjudications=manual_adjudications,
     )

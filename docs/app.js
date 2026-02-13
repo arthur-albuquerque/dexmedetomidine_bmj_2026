@@ -35,20 +35,19 @@ const state = {
   filtered: [],
   tableFiltered: [],
   filters: {
-    search: '',
-    rob: 'all',
-    timing: 'all',
-    route: 'all',
-    dose: 'all'
+    rob: [],
+    timing: [],
+    route: [],
+    dose: []
   },
   tableFilters: {
-    study: '',
-    country: '',
-    rob: 'all',
-    bolus: '',
-    infusion: '',
-    timing: 'all',
-    route: 'all'
+    study: [],
+    country: [],
+    rob: [],
+    bolus: [],
+    infusion: [],
+    timing: [],
+    route: []
   }
 };
 
@@ -62,6 +61,19 @@ function routeLabel(value) {
 
 function doseBandLabel(value) {
   return DOSE_BAND_LABELS[value] || value;
+}
+
+function isFilterActive(values) {
+  return Array.isArray(values) && values.length > 0;
+}
+
+function matchesMultiSelect(value, selectedValues) {
+  if (!isFilterActive(selectedValues)) return true;
+  return selectedValues.includes(value);
+}
+
+function selectedValuesFromSelect(selectElement) {
+  return Array.from(selectElement.selectedOptions || []).map((option) => option.value);
 }
 
 function parseFlags(raw) {
@@ -120,33 +132,28 @@ function robClass(rob) {
 }
 
 function applyFilters() {
-  const searchTerm = state.filters.search.trim().toLowerCase();
   state.filtered = state.trials.filter((row) => {
-    if (state.filters.rob !== 'all' && row.rob_overall_std !== state.filters.rob) return false;
-    if (state.filters.timing !== 'all' && row.timing_phase !== state.filters.timing) return false;
-    if (state.filters.route !== 'all' && row.route_std !== state.filters.route) return false;
-    if (state.filters.dose !== 'all' && doseBand(row) !== state.filters.dose) return false;
-
-    if (!searchTerm) return true;
-    const haystack = `${row.study_label} ${row.country} ${row.dex_arm_text_raw} ${row.control_arm_text_raw}`.toLowerCase();
-    return haystack.includes(searchTerm);
+    if (!matchesMultiSelect(row.rob_overall_std, state.filters.rob)) return false;
+    if (!matchesMultiSelect(row.timing_phase, state.filters.timing)) return false;
+    if (!matchesMultiSelect(row.route_std, state.filters.route)) return false;
+    if (!matchesMultiSelect(doseBand(row), state.filters.dose)) return false;
+    return true;
   });
 }
 
 function applyTableFilters() {
   state.tableFiltered = state.filtered.filter((row) => {
-    const studyText = (row.study_label || '').toLowerCase();
-    const countryText = (row.country || '').toLowerCase();
-    const bolusText = formatBolus(row).toLowerCase();
-    const infusionText = formatInfusion(row).toLowerCase();
+    const countryValue = row.country || 'Not reported';
+    const bolusValue = formatBolus(row);
+    const infusionValue = formatInfusion(row);
 
-    if (state.tableFilters.study && !studyText.includes(state.tableFilters.study)) return false;
-    if (state.tableFilters.country && !countryText.includes(state.tableFilters.country)) return false;
-    if (state.tableFilters.bolus && !bolusText.includes(state.tableFilters.bolus)) return false;
-    if (state.tableFilters.infusion && !infusionText.includes(state.tableFilters.infusion)) return false;
-    if (state.tableFilters.rob !== 'all' && row.rob_overall_std !== state.tableFilters.rob) return false;
-    if (state.tableFilters.timing !== 'all' && row.timing_phase !== state.tableFilters.timing) return false;
-    if (state.tableFilters.route !== 'all' && row.route_std !== state.tableFilters.route) return false;
+    if (!matchesMultiSelect(row.study_label, state.tableFilters.study)) return false;
+    if (!matchesMultiSelect(countryValue, state.tableFilters.country)) return false;
+    if (!matchesMultiSelect(row.rob_overall_std, state.tableFilters.rob)) return false;
+    if (!matchesMultiSelect(bolusValue, state.tableFilters.bolus)) return false;
+    if (!matchesMultiSelect(infusionValue, state.tableFilters.infusion)) return false;
+    if (!matchesMultiSelect(row.timing_phase, state.tableFilters.timing)) return false;
+    if (!matchesMultiSelect(row.route_std, state.tableFilters.route)) return false;
     return true;
   });
 }
@@ -254,20 +261,43 @@ function renderTimingChart() {
   );
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function normalizeStudyUrl(rawUrl) {
+  if (typeof rawUrl !== 'string') return '';
+  const trimmed = rawUrl.trim();
+  if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
+    return trimmed;
+  }
+  return '';
+}
+
 function renderTable() {
   const body = document.getElementById('trials-body');
   body.innerHTML = '';
 
   state.tableFiltered.forEach((row) => {
+    const studyUrl = normalizeStudyUrl(row.study_url);
+    const studyLabel = escapeHtml(row.study_label);
+    const studyCell = studyUrl
+      ? `<a class="study-link" href="${escapeHtml(studyUrl)}" target="_blank" rel="noopener noreferrer">${studyLabel}</a>`
+      : `<span class="study-name">${studyLabel}</span>`;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="study-name">${row.study_label}</span></td>
-      <td>${row.country || 'Not reported'}</td>
-      <td><span class="rob-pill ${robClass(row.rob_overall_std)}">${row.rob_overall_std}</span></td>
-      <td>${formatBolus(row)}</td>
-      <td>${formatInfusion(row)}</td>
-      <td>${timingLabel(row.timing_phase)}</td>
-      <td>${routeLabel(row.route_std)}</td>
+      <td>${studyCell}</td>
+      <td>${escapeHtml(row.country || 'Not reported')}</td>
+      <td><span class="rob-pill ${robClass(row.rob_overall_std)}">${escapeHtml(row.rob_overall_std)}</span></td>
+      <td>${escapeHtml(formatBolus(row))}</td>
+      <td>${escapeHtml(formatInfusion(row))}</td>
+      <td>${escapeHtml(timingLabel(row.timing_phase))}</td>
+      <td>${escapeHtml(routeLabel(row.route_std))}</td>
     `;
     body.appendChild(tr);
   });
@@ -282,24 +312,23 @@ function rerender() {
   renderTable();
 }
 
-function bindFilter(id, key) {
-  document.getElementById(id).addEventListener('input', (event) => {
-    state.filters[key] = event.target.value;
+function bindMultiSelectFilter(id, targetState, key) {
+  document.getElementById(id).addEventListener('change', (event) => {
+    targetState[key] = selectedValuesFromSelect(event.target);
     rerender();
   });
 }
 
-function bindTableFilter(id, key, mode = 'input') {
-  const eventName = mode === 'select' ? 'change' : 'input';
-  document.getElementById(id).addEventListener(eventName, (event) => {
-    const value = event.target.value;
-    state.tableFilters[key] = mode === 'select' ? value : value.trim().toLowerCase();
-    rerender();
+function clearMultiSelect(id) {
+  const select = document.getElementById(id);
+  Array.from(select.options).forEach((option) => {
+    option.selected = false;
   });
 }
 
 function populateSelect(id, values, labeler) {
   const select = document.getElementById(id);
+  select.innerHTML = '';
   values.forEach((value) => {
     const option = document.createElement('option');
     option.value = value;
@@ -333,45 +362,51 @@ async function init() {
   const trialsRaw = await fetch('./data/trials_curated.json').then((response) => response.json());
   state.trials = trialsRaw.map((row) => normalizeTrial(row));
 
-  const robValues = [...new Set(state.trials.map((row) => row.rob_overall_std))].sort();
+  const robValues = [...new Set(state.trials.map((row) => row.rob_overall_std))].sort((a, b) => a.localeCompare(b));
   const timingValues = TIMING_ORDER.filter((key) => state.trials.some((row) => row.timing_phase === key));
-  const routeValues = [...new Set(state.trials.map((row) => row.route_std))].sort();
+  const routeValues = [...new Set(state.trials.map((row) => row.route_std))].sort((a, b) => routeLabel(a).localeCompare(routeLabel(b)));
+  const studyValues = [...new Set(state.trials.map((row) => row.study_label))].sort((a, b) => a.localeCompare(b));
+  const countryValues = [...new Set(state.trials.map((row) => row.country || 'Not reported'))].sort((a, b) => a.localeCompare(b));
+  const bolusValues = [...new Set(state.trials.map((row) => formatBolus(row)))].sort((a, b) => a.localeCompare(b));
+  const infusionValues = [...new Set(state.trials.map((row) => formatInfusion(row)))].sort((a, b) => a.localeCompare(b));
 
   populateSelect('rob-filter', robValues, (value) => value);
   populateSelect('timing-filter', timingValues, (value) => timingLabel(value));
   populateSelect('route-filter', routeValues, (value) => routeLabel(value));
+  populateSelect('tbl-filter-study', studyValues, (value) => value);
+  populateSelect('tbl-filter-country', countryValues, (value) => value);
   populateSelect('tbl-filter-rob', robValues, (value) => value);
+  populateSelect('tbl-filter-bolus', bolusValues, (value) => value);
+  populateSelect('tbl-filter-infusion', infusionValues, (value) => value);
   populateSelect('tbl-filter-timing', timingValues, (value) => timingLabel(value));
   populateSelect('tbl-filter-route', routeValues, (value) => routeLabel(value));
 
-  bindFilter('search', 'search');
-  bindFilter('rob-filter', 'rob');
-  bindFilter('timing-filter', 'timing');
-  bindFilter('route-filter', 'route');
-  bindFilter('dose-filter', 'dose');
-  bindTableFilter('tbl-filter-study', 'study');
-  bindTableFilter('tbl-filter-country', 'country');
-  bindTableFilter('tbl-filter-rob', 'rob', 'select');
-  bindTableFilter('tbl-filter-bolus', 'bolus');
-  bindTableFilter('tbl-filter-infusion', 'infusion');
-  bindTableFilter('tbl-filter-timing', 'timing', 'select');
-  bindTableFilter('tbl-filter-route', 'route', 'select');
+  bindMultiSelectFilter('rob-filter', state.filters, 'rob');
+  bindMultiSelectFilter('timing-filter', state.filters, 'timing');
+  bindMultiSelectFilter('route-filter', state.filters, 'route');
+  bindMultiSelectFilter('dose-filter', state.filters, 'dose');
+  bindMultiSelectFilter('tbl-filter-study', state.tableFilters, 'study');
+  bindMultiSelectFilter('tbl-filter-country', state.tableFilters, 'country');
+  bindMultiSelectFilter('tbl-filter-rob', state.tableFilters, 'rob');
+  bindMultiSelectFilter('tbl-filter-bolus', state.tableFilters, 'bolus');
+  bindMultiSelectFilter('tbl-filter-infusion', state.tableFilters, 'infusion');
+  bindMultiSelectFilter('tbl-filter-timing', state.tableFilters, 'timing');
+  bindMultiSelectFilter('tbl-filter-route', state.tableFilters, 'route');
 
   document.getElementById('reset-filters').addEventListener('click', () => {
-    state.filters = { search: '', rob: 'all', timing: 'all', route: 'all', dose: 'all' };
-    state.tableFilters = { study: '', country: '', rob: 'all', bolus: '', infusion: '', timing: 'all', route: 'all' };
-    document.getElementById('search').value = '';
-    document.getElementById('rob-filter').value = 'all';
-    document.getElementById('timing-filter').value = 'all';
-    document.getElementById('route-filter').value = 'all';
-    document.getElementById('dose-filter').value = 'all';
-    document.getElementById('tbl-filter-study').value = '';
-    document.getElementById('tbl-filter-country').value = '';
-    document.getElementById('tbl-filter-rob').value = 'all';
-    document.getElementById('tbl-filter-bolus').value = '';
-    document.getElementById('tbl-filter-infusion').value = '';
-    document.getElementById('tbl-filter-timing').value = 'all';
-    document.getElementById('tbl-filter-route').value = 'all';
+    state.filters = { rob: [], timing: [], route: [], dose: [] };
+    state.tableFilters = { study: [], country: [], rob: [], bolus: [], infusion: [], timing: [], route: [] };
+    clearMultiSelect('rob-filter');
+    clearMultiSelect('timing-filter');
+    clearMultiSelect('route-filter');
+    clearMultiSelect('dose-filter');
+    clearMultiSelect('tbl-filter-study');
+    clearMultiSelect('tbl-filter-country');
+    clearMultiSelect('tbl-filter-rob');
+    clearMultiSelect('tbl-filter-bolus');
+    clearMultiSelect('tbl-filter-infusion');
+    clearMultiSelect('tbl-filter-timing');
+    clearMultiSelect('tbl-filter-route');
     rerender();
   });
 

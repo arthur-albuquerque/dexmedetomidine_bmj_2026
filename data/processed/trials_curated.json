@@ -2,6 +2,8 @@
   {
     "trial_id": "abd_ellatif_2024_p1",
     "study_label": "Abd Ellatif 2024",
+    "study_reference_number": 1,
+    "study_url": "https://dx.doi.org/10.1186/s12871-023-02378-5",
     "year": 2024,
     "country": "Egypt",
     "n_total": 120,
@@ -38,6 +40,8 @@
   {
     "trial_id": "chen_2021_p2",
     "study_label": "Chen 2021",
+    "study_reference_number": 12,
+    "study_url": "https://dx.doi.org/10.1097/EJA.0000000000001532",
     "year": 2021,
     "country": "Taiwan",
     "n_total": 160,
@@ -74,6 +78,8 @@
   {
     "trial_id": "choovongkom_ol_2024_p2",
     "study_label": "Choovongkom ol 2024",
+    "study_reference_number": 14,
+    "study_url": "https://dx.doi.org/10.33192/smj.v76i2.266653",
     "year": 2024,
     "country": "Thailand",
     "n_total": 200,
@@ -111,6 +117,8 @@
   {
     "trial_id": "deiner_2017_p2",
     "study_label": "Deiner 2017",
+    "study_reference_number": 18,
+    "study_url": "https://dx.doi.org/10.1001/jamasurg.2017.1505",
     "year": 2017,
     "country": "USA",
     "n_total": 390,
@@ -146,6 +154,8 @@
   {
     "trial_id": "gao_2020_p3",
     "study_label": "Gao 2020",
+    "study_reference_number": 28,
+    "study_url": "https://dx.doi.org/10.3233/CH-190590",
     "year": 2020,
     "country": "China",
     "n_total": 60,
@@ -181,6 +191,8 @@
   {
     "trial_id": "gao_2021_p3",
     "study_label": "Gao 2021",
+    "study_reference_number": 29,
+    "study_url": "https://dx.doi.org/10.1532/hsf.4073",
     "year": 2021,
     "country": "China",
     "n_total": 40,
@@ -216,6 +228,8 @@
   {
     "trial_id": "ghazaly_2023_p3",
     "study_label": "Ghazaly 2023",
+    "study_reference_number": 30,
+    "study_url": "https://dx.doi.org/10.1186/s12871-023-02367-8",
     "year": 2023,
     "country": "Egypt",
     "n_total": 60,
@@ -253,6 +267,8 @@
   {
     "trial_id": "guo_2015_p4",
     "study_label": "Guo 2015",
+    "study_reference_number": 32,
+    "study_url": null,
     "year": 2015,
     "country": "China",
     "n_total": 156,
@@ -289,6 +305,8 @@
   {
     "trial_id": "he_2021_p4",
     "study_label": "He 2021",
+    "study_reference_number": 36,
+    "study_url": "https://dx.doi.org/10.1186/s12883-021-02506-z",
     "year": 2021,
     "country": "China",
     "n_total": 60,
@@ -325,6 +343,8 @@
   {
     "trial_id": "he_2022_p4",
     "study_label": "He 2022",
+    "study_reference_number": 37,
+    "study_url": "https://doi.org/10.3969/j.issn.2095-1264.2022.03.17",
     "year": 2022,
     "country": "China",
     "n_total": 80,
@@ -360,6 +380,8 @@
   {
     "trial_id": "he_2023_p4",
     "study_label": "He 2023",
+    "study_reference_number": 38,
+    "study_url": "https://doi.org/10.3760/cma.j.cn131073.20230322.00706",
     "year": 2023,
     "country": "China",
     "n_total": 60,
@@ -395,6 +417,8 @@
   {
     "trial_id": "he_2024_p4",
     "study_label": "He 2024",
+    "study_reference_number": 39,
+    "study_url": "https://dx.doi.org/10.1186/s12871-024-02417-9",
     "year": 2024,
     "country": "China",
     "n_total": 120,
@@ -431,6 +455,8 @@
   {
     "trial_id": "hong_2021_p4",
     "study_label": "Hong 2021",
+    "study_reference_number": 41,
+    "study_url": "https://dx.doi.org/10.1186/s12871-021-01441-3",
     "year": 2021,
     "country": "China",
     "n_total": 712,
@@ -466,6 +492,8 @@
   {
     "trial_id": "hu_2021_p4",
     "study_label": "Hu 2021",
+    "study_reference_number": 43,
+    "study_url": "https://dx.doi.org/10.1097/EJA.0000000000001382",
     "year": 2021,
     "country": "China",
     "n_total": 177,
@@ -501,6 +529,8 @@
   {
     "trial_id": "hu_2022_p5",
     "study_label": "Hu 2022",
+    "study_reference_number": 44,
+    "study_url": "https://doi.org/10.31925/farmacia.2022.5.21",
     "year": 2022,
     "country": "China",
     "n_total": 60,
@@ -537,6 +567,8 @@
   {
     "trial_id": "huet_2024_p5",
     "study_label": "Huet 2024",
+    "study_reference_number": 49,
+    "study_url": "https://dx.doi.org/10.1186/s13054-024-04842-1",
     "year": 2024,
     "country": "France",
     "n_total": 333,
@@ -573,6 +605,8 @@
   {
     "trial_id": "kim_2019_p6",
     "study_label": "Kim 2019",
+    "study_reference_number": 60,
+    "study_url": "https://dx.doi.org/10.1007/s12630-019-01299-7",
     "year": 2019,
     "country": "South Korea",
     "n_total": 143,
@@ -609,6 +643,8 @@
   {
     "trial_id": "lai_2023_p6",
     "study_label": "Lai 2023",
+    "study_reference_number": 63,
+    "study_url": "https://dx.doi.org/10.2147/CIA.S419835",
     "year": 2023,
     "country": "China",
     "n_total": 90,
@@ -644,6 +680,8 @@
   {
     "trial_id": "lee_2018_p6",
     "study_label": "Lee 2018",
+    "study_reference_number": 65,
+    "study_url": "https://dx.doi.org/10.1016/j.jclinane.2018.03.007",
     "year": 2018,
     "country": "South Korea",
     "n_total": 345,
@@ -677,6 +715,8 @@
   {
     "trial_id": "lee_2020_p6",
     "study_label": "Lee 2020",
+    "study_reference_number": 66,
+    "study_url": "https://dx.doi.org/10.1016/j.transproceed.2019.11.015",
     "year": 2020,
     "country": "South Korea",
     "n_total": 215,
@@ -713,6 +753,8 @@
   {
     "trial_id": "li_2017_p7",
     "study_label": "Li 2017",
+    "study_reference_number": 71,
+    "study_url": "https://dx.doi.org/10.1371/journal.pone.0170757",
     "year": 2017,
     "country": "China",
     "n_total": 285,
@@ -748,6 +790,8 @@
   {
     "trial_id": "li_2020_p7",
     "study_label": "Li 2020",
+    "study_reference_number": 72,
+    "study_url": "https://dx.doi.org/10.1002/bjs.11354",
     "year": 2020,
     "country": "China",
     "n_total": 619,
@@ -783,6 +827,8 @@
   {
     "trial_id": "li_2023_p7",
     "study_label": "Li 2023",
+    "study_reference_number": 74,
+    "study_url": "https://dx.doi.org/10.1016/j.bja.2022.10.041",
     "year": 2023,
     "country": "China",
     "n_total": 260,
@@ -820,6 +866,8 @@
   {
     "trial_id": "likhvantsev_2021_p7",
     "study_label": "Likhvantsev 2021",
+    "study_reference_number": 75,
+    "study_url": "https://dx.doi.org/10.1053/j.jvca.2020.02.035",
     "year": 2021,
     "country": "Russia",
     "n_total": 175,
@@ -856,6 +904,8 @@
   {
     "trial_id": "liu_2016_p7",
     "study_label": "Liu 2016",
+    "study_reference_number": 78,
+    "study_url": "https://dx.doi.org/10.1007/s40520-015-0492-3",
     "year": 2016,
     "country": "China",
     "n_total": 197,
@@ -892,6 +942,8 @@
   {
     "trial_id": "liu_2021_p7",
     "study_label": "Liu 2021",
+    "study_reference_number": 79,
+    "study_url": "https://dx.doi.org/10.2147/IJGM.S370237",
     "year": 2021,
     "country": "China",
     "n_total": 120,
@@ -925,6 +977,8 @@
   {
     "trial_id": "liu_2023_p7",
     "study_label": "Liu 2023",
+    "study_reference_number": 80,
+    "study_url": "https://dx.doi.org/10.2147/DDDT.S424526",
     "year": 2023,
     "country": "China",
     "n_total": 304,
@@ -962,6 +1016,8 @@
   {
     "trial_id": "long_2024_p8",
     "study_label": "Long 2024",
+    "study_reference_number": 82,
+    "study_url": "https://dx.doi.org/10.1213/ANE.0000000000006686",
     "year": 2024,
     "country": "China",
     "n_total": 78,
@@ -998,6 +1054,8 @@
   {
     "trial_id": "lu_2021_p8",
     "study_label": "Lu 2021",
+    "study_reference_number": 83,
+    "study_url": "https://dx.doi.org/10.1001/jamanetworkopen.2021.28886",
     "year": 2021,
     "country": "China",
     "n_total": 808,
@@ -1034,6 +1092,8 @@
   {
     "trial_id": "lv_2022_p8",
     "study_label": "Lv 2022",
+    "study_reference_number": 86,
+    "study_url": "https://dx.doi.org/10.1590/1806-9282.20210696",
     "year": 2022,
     "country": "China",
     "n_total": 327,
@@ -1070,6 +1130,8 @@
   {
     "trial_id": "ma_2013_p8",
     "study_label": "Ma 2013",
+    "study_reference_number": 87,
+    "study_url": "https://doi.org/10.7694/jldxyxb20130129",
     "year": 2013,
     "country": "China",
     "n_total": 120,
@@ -1106,6 +1168,8 @@
   {
     "trial_id": "massoumi_2019_p8",
     "study_label": "Massoumi 2019",
+    "study_reference_number": 94,
+    "study_url": "https://dx.doi.org/10.22122/arya.v15i1.1748",
     "year": 2019,
     "country": "Iran",
     "n_total": 90,
@@ -1141,6 +1205,8 @@
   {
     "trial_id": "momeni_2021_p9",
     "study_label": "Momeni 2021",
+    "study_reference_number": 100,
+    "study_url": "https://dx.doi.org/10.1016/j.bja.2020.10.041",
     "year": 2021,
     "country": "Belgium",
     "n_total": 417,
@@ -1178,6 +1244,8 @@
   {
     "trial_id": "qu_2023_p10",
     "study_label": "Qu 2023",
+    "study_reference_number": 111,
+    "study_url": "https://dx.doi.org/10.1016/j.eclinm.2022.101796",
     "year": 2023,
     "country": "USA",
     "n_total": 394,
@@ -1214,6 +1282,8 @@
   {
     "trial_id": "soh_2020_p11",
     "study_label": "Soh 2020",
+    "study_reference_number": 122,
+    "study_url": "https://dx.doi.org/10.1016/j.bja.2019.12.036",
     "year": 2020,
     "country": "South Korea",
     "n_total": 108,
@@ -1250,6 +1320,8 @@
   {
     "trial_id": "su_2016_p11",
     "study_label": "Su 2016",
+    "study_reference_number": 125,
+    "study_url": "https://dx.doi.org/10.1016/S0140-6736(16)30580-3",
     "year": 2016,
     "country": "China",
     "n_total": 700,
@@ -1285,6 +1357,8 @@
   {
     "trial_id": "tang_2022_p11",
     "study_label": "Tang 2022",
+    "study_reference_number": 130,
+    "study_url": "https://dx.doi.org/10.11817/j.issn.1672-7347.2022.210280",
     "year": 2022,
     "country": "China",
     "n_total": 120,
@@ -1321,6 +1395,8 @@
   {
     "trial_id": "turan_2020_p12",
     "study_label": "Turan 2020",
+    "study_reference_number": 131,
+    "study_url": "https://dx.doi.org/10.1016/S0140-6736(20)30631-0",
     "year": 2020,
     "country": "USA",
     "n_total": 794,
@@ -1356,6 +1432,8 @@
   {
     "trial_id": "van_norden_2021_p12",
     "study_label": "van Norden 2021",
+    "study_reference_number": 132,
+    "study_url": "https://dx.doi.org/10.1111/anae.15469",
     "year": 2021,
     "country": "German y",
     "n_total": 60,
@@ -1392,6 +1470,8 @@
   {
     "trial_id": "wang_2023_p12",
     "study_label": "Wang 2023",
+    "study_reference_number": 136,
+    "study_url": "https://dx.doi.org/10.1111/anae.15983",
     "year": 2023,
     "country": "China",
     "n_total": 652,
@@ -1429,6 +1509,8 @@
   {
     "trial_id": "wu_2023_p13",
     "study_label": "Wu 2023",
+    "study_reference_number": 141,
+    "study_url": "https://dx.doi.org/10.3389/fphar.2023.1223746",
     "year": 2023,
     "country": "China",
     "n_total": 115,
@@ -1466,6 +1548,8 @@
   {
     "trial_id": "xie_2023_p13",
     "study_label": "Xie 2023",
+    "study_reference_number": 144,
+    "study_url": "https://dx.doi.org/10.1007/s40520-023-02497-6",
     "year": 2023,
     "country": "China",
     "n_total": 240,
@@ -1503,6 +1587,8 @@
   {
     "trial_id": "xin_2021_p13",
     "study_label": "Xin 2021",
+    "study_reference_number": 145,
+    "study_url": "https://dx.doi.org/10.1002/gps.5406",
     "year": 2021,
     "country": "China",
     "n_total": 60,
@@ -1539,6 +1625,8 @@
   {
     "trial_id": "xing_2021_p13",
     "study_label": "Xing 2021",
+    "study_reference_number": 146,
+    "study_url": "https://doi.org/10.6890/IJGE.202107_15(3).0004",
     "year": 2021,
     "country": "China",
     "n_total": 110,
@@ -1577,6 +1665,8 @@
   {
     "trial_id": "yang_2015_p13",
     "study_label": "Yang 2015",
+    "study_reference_number": 148,
+    "study_url": "https://dx.doi.org/10.1016/j.joms.2015.01.011",
     "year": 2015,
     "country": "China",
     "n_total": 80,
@@ -1612,6 +1702,8 @@
   {
     "trial_id": "yoo_2024_p14",
     "study_label": "Yoo 2024",
+    "study_reference_number": 151,
+    "study_url": "https://dx.doi.org/10.3390/jcm12206610",
     "year": 2024,
     "country": "South Korea",
     "n_total": 128,
@@ -1647,6 +1739,8 @@
   {
     "trial_id": "zhang_2020_p14",
     "study_label": "Zhang 2020",
+    "study_reference_number": 154,
+    "study_url": "https://dx.doi.org/10.3389/fphar.2020.00678",
     "year": 2020,
     "country": "China",
     "n_total": 232,
@@ -1682,6 +1776,8 @@
   {
     "trial_id": "zhang_2023_p14",
     "study_label": "Zhang 2023",
+    "study_reference_number": 155,
+    "study_url": "https://dx.doi.org/10.1016/j.sleep.2022.12.006",
     "year": 2023,
     "country": "China",
     "n_total": 117,
@@ -1717,6 +1813,8 @@
   {
     "trial_id": "zhao_2020_p14",
     "study_label": "Zhao 2020",
+    "study_reference_number": 156,
+    "study_url": "https://dx.doi.org/10.3389/fnins.2020.549516",
     "year": 2020,
     "country": "China",
     "n_total": 416,
