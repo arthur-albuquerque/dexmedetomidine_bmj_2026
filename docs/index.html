@@ -6,17 +6,22 @@
     <title>Dexmedetomidine Evidence Atlas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Source+Serif+4:wght@500;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="page">
-      <header class="hero">
-        <div>
-          <p class="kicker">BMJ Delirium Evidence Atlas</p>
-          <h1>Dexmedetomidine Dosing &amp; Timing</h1>
-          <p id="subtitle">Clinical interpretation view of dexmedetomidine administration patterns, stratified by RoB2 class.</p>
+      <header class="hero" aria-label="Review header">
+        <div class="hero-main">
+          <p class="kicker">Clinical Evidence Dashboard</p>
+          <h1>Dexmedetomidine Dosing and Timing in Postoperative Delirium Prevention</h1>
+          <p class="subtitle">
+            Designed for rapid clinical interpretation of how dexmedetomidine was administered across eligible trials.
+          </p>
           <p class="citation">
             Source review: <em>Effectiveness of drug interventions to prevent delirium after surgery for older adults: systematic review and network meta-analysis of randomised controlled trials</em>.<br />
             Luney et al., 2026. DOI:
@@ -24,68 +29,119 @@
             (<a href="https://www.bmj.com/content/392/bmj-2025-085539" target="_blank" rel="noopener noreferrer">BMJ article page</a>)
           </p>
         </div>
-        <div class="hero-stats">
-          <article><span id="trials-total">-</span><small>Trials</small></article>
-          <article><span id="participants-total">-</span><small>Participants</small></article>
-          <article><span id="review-total">-</span><small>Review Queue</small></article>
+
+        <div class="hero-stats" aria-label="Summary statistics">
+          <article class="stat-card">
+            <span id="trials-total" class="stat-value">-</span>
+            <span class="stat-label">Filtered Trials</span>
+          </article>
+          <article class="stat-card accent-intra">
+            <span id="trials-intra" class="stat-value">-</span>
+            <span class="stat-label">Intra-operatively</span>
+          </article>
+          <article class="stat-card accent-post">
+            <span id="trials-post" class="stat-value">-</span>
+            <span class="stat-label">Post-operatively</span>
+          </article>
+          <article class="stat-card accent-pre">
+            <span id="trials-pre" class="stat-value">-</span>
+            <span class="stat-label">Pre-operatively</span>
+          </article>
+          <article class="stat-card context-card">
+            <span id="participants-total" class="stat-value">-</span>
+            <span class="stat-label">Participants (context only)</span>
+          </article>
         </div>
       </header>
 
-      <section class="panel" id="filters-panel">
-        <h2>Filters</h2>
-        <div class="filters">
-          <label>Search<input id="search" type="text" placeholder="study, country, intervention" /></label>
-          <label>RoB2
-            <select id="rob-filter"><option value="all">all</option></select>
+      <section class="panel intro-panel" aria-label="Interpretation guidance">
+        <h2>How to Read This Page</h2>
+        <p>
+          The charts display <strong>number of trials</strong> (not weighted values). Use timing filters to isolate when dexmedetomidine was given:
+          <strong>Pre-operatively</strong>, <strong>Intra-operatively</strong>, or <strong>Post-operatively</strong>.
+        </p>
+      </section>
+
+      <section class="panel" id="filters-panel" aria-label="Filters">
+        <div class="panel-head">
+          <h2>Filter Trials</h2>
+          <button id="reset-filters" class="secondary-btn" type="button">Clear all filters</button>
+        </div>
+
+        <div id="timing-pills" class="timing-pills" role="group" aria-label="Quick timing filters"></div>
+
+        <div class="filters-grid">
+          <label>
+            Search trial text
+            <input id="search" type="text" placeholder="Study, country, dosing text" />
           </label>
-          <label>Timing
-            <select id="timing-filter"><option value="all">all</option></select>
+
+          <label>
+            RoB2 overall
+            <select id="rob-filter">
+              <option value="all">All risk categories</option>
+            </select>
           </label>
-          <label>Route
-            <select id="route-filter"><option value="all">all</option></select>
+
+          <label>
+            Timing of intervention
+            <select id="timing-filter">
+              <option value="all">All timing categories</option>
+            </select>
           </label>
-          <label>Dose band
+
+          <label>
+            Route
+            <select id="route-filter">
+              <option value="all">All routes</option>
+            </select>
+          </label>
+
+          <label>
+            Infusion dose band
             <select id="dose-filter">
-              <option value="all">all</option>
-              <option value="0-0.2">0-0.2</option>
-              <option value="0.2-0.5">0.2-0.5</option>
-              <option value="0.5-0.8">0.5-0.8</option>
-              <option value=">0.8">>0.8</option>
-              <option value="not_reported">not_reported</option>
-              <option value="not_weight_normalized">not_weight_normalized</option>
+              <option value="all">All dose bands</option>
+              <option value="0-0.2">0.0 to 0.2 mcg/kg/h</option>
+              <option value="0.2-0.5">0.2 to 0.5 mcg/kg/h</option>
+              <option value="0.5-0.8">0.5 to 0.8 mcg/kg/h</option>
+              <option value=">0.8">Above 0.8 mcg/kg/h</option>
+              <option value="not_reported">Infusion not reported</option>
+              <option value="not_weight_normalized">Infusion not weight-normalized</option>
             </select>
           </label>
         </div>
-        <div class="actions">
-          <button id="reset-filters">Reset</button>
-        </div>
       </section>
 
-      <section class="panel grid2">
+      <section class="panel chart-grid" aria-label="Dose and timing charts">
         <article>
-          <h2>Dose Bands (weighted)</h2>
+          <h2>Infusion Dose Bands</h2>
+          <p class="chart-subtitle">Number of trials in each dose band.</p>
           <div id="dose-chart" class="chart"></div>
         </article>
+
         <article>
-          <h2>Timing Phases (weighted)</h2>
+          <h2>Timing of Dexmedetomidine Administration</h2>
+          <p class="chart-subtitle">Number of trials by timing category.</p>
           <div id="timing-chart" class="chart"></div>
         </article>
       </section>
 
-      <section class="panel">
-        <h2>Per-Trial Table</h2>
+      <section class="panel" aria-label="Trial table">
+        <h2>Trial-Level Details</h2>
+        <p class="table-caption">Clinical wording is used for intervention timing to support quick review.</p>
+
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Study</th>
-                <th>N</th>
+                <th>Country</th>
                 <th>RoB2</th>
                 <th>Bolus</th>
                 <th>Infusion</th>
-                <th>Timing</th>
+                <th>Timing of intervention</th>
                 <th>Route</th>
-                <th>Flags</th>
+                <th>Reporting notes</th>
               </tr>
             </thead>
             <tbody id="trials-body"></tbody>
@@ -93,17 +149,25 @@
         </div>
       </section>
 
-      <section class="panel">
-        <h2>Interpretation Notes</h2>
-        <p class="interp-note">
-          Use the <strong>Timing</strong> filter to compare pre-operative, intra-operative, and post-operative dexmedetomidine patterns.
-          Prioritize estimates from lower-risk strata when interpreting regimen consistency.
-        </p>
+      <section class="panel" aria-label="Data quality summary">
+        <h2>Data Completeness Snapshot</h2>
         <div class="qa-grid">
-          <article><h3>Trials with Missing Dose Components</h3><p id="qa-flags">-</p></article>
-          <article><h3>High-Risk Data Warnings</h3><p id="qa-critical">-</p></article>
-          <article><h3>Outstanding Critical Issues</h3><p id="qa-unresolved">-</p></article>
-          <article><h3>Most Common Route</h3><p id="qa-route">-</p></article>
+          <article>
+            <h3>Trials with missing dose components</h3>
+            <p id="qa-flags">-</p>
+          </article>
+          <article>
+            <h3>Trials flagged as high risk of bias</h3>
+            <p id="qa-critical">-</p>
+          </article>
+          <article>
+            <h3>Outstanding critical data issues</h3>
+            <p id="qa-unresolved">-</p>
+          </article>
+          <article>
+            <h3>Most common route</h3>
+            <p id="qa-route">-</p>
+          </article>
         </div>
       </section>
     </main>
