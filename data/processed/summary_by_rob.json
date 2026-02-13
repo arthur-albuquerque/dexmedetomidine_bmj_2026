@@ -1,0 +1,179 @@
+{
+  "generated_at_utc": "2026-02-13T15:04:17.070686+00:00",
+  "low_risk": {
+    "n_trials": 14,
+    "n_participants": 4916,
+    "missingness": {
+      "bolus_missing": 11,
+      "infusion_missing": 4,
+      "timing_missing": 0,
+      "route_missing": 0
+    },
+    "dose_bands_weighted": [
+      {
+        "category": "not_weight_normalized",
+        "weighted_n": 2070.0,
+        "weighted_prop": 0.421074
+      },
+      {
+        "category": "0-0.2",
+        "weighted_n": 1731.0,
+        "weighted_prop": 0.352116
+      },
+      {
+        "category": "0.2-0.5",
+        "weighted_n": 1115.0,
+        "weighted_prop": 0.22681
+      }
+    ],
+    "timing_phase_weighted": [
+      {
+        "category": "peri_multi",
+        "weighted_n": 3472.0,
+        "weighted_prop": 0.706265
+      },
+      {
+        "category": "intra_op",
+        "weighted_n": 1444.0,
+        "weighted_prop": 0.293735
+      }
+    ],
+    "route_weighted": [
+      {
+        "category": "IV",
+        "weighted_n": 3447.0,
+        "weighted_prop": 0.70118
+      },
+      {
+        "category": "IN+IV",
+        "weighted_n": 1184.0,
+        "weighted_prop": 0.240846
+      },
+      {
+        "category": "IV+PO",
+        "weighted_n": 285.0,
+        "weighted_prop": 0.057974
+      }
+    ],
+    "infusion_midpoint_distribution": {
+      "median": 0.4,
+      "q1": 0.2,
+      "q3": 0.4,
+      "n_trials": 9
+    }
+  },
+  "some_concerns": {
+    "n_trials": 32,
+    "n_participants": 6094,
+    "missingness": {
+      "bolus_missing": 21,
+      "infusion_missing": 8,
+      "timing_missing": 0,
+      "route_missing": 0
+    },
+    "dose_bands_weighted": [
+      {
+        "category": "not_weight_normalized",
+        "weighted_n": 2489.0,
+        "weighted_prop": 0.408435
+      },
+      {
+        "category": "0-0.2",
+        "weighted_n": 1579.0,
+        "weighted_prop": 0.259107
+      },
+      {
+        "category": "0.2-0.5",
+        "weighted_n": 1518.0,
+        "weighted_prop": 0.249097
+      },
+      {
+        "category": "0.5-0.8",
+        "weighted_n": 333.0,
+        "weighted_prop": 0.054644
+      },
+      {
+        "category": ">0.8",
+        "weighted_n": 175.0,
+        "weighted_prop": 0.028717
+      }
+    ],
+    "timing_phase_weighted": [
+      {
+        "category": "intra_op",
+        "weighted_n": 3602.0,
+        "weighted_prop": 0.591073
+      },
+      {
+        "category": "peri_multi",
+        "weighted_n": 2492.0,
+        "weighted_prop": 0.408927
+      }
+    ],
+    "route_weighted": [
+      {
+        "category": "IV",
+        "weighted_n": 5804.0,
+        "weighted_prop": 0.952412
+      },
+      {
+        "category": "IN+IV",
+        "weighted_n": 290.0,
+        "weighted_prop": 0.047588
+      }
+    ],
+    "infusion_midpoint_distribution": {
+      "median": 0.4,
+      "q1": 0.2,
+      "q3": 0.5,
+      "n_trials": 24
+    }
+  },
+  "high_risk": {
+    "n_trials": 3,
+    "n_participants": 697,
+    "missingness": {
+      "bolus_missing": 2,
+      "infusion_missing": 1,
+      "timing_missing": 0,
+      "route_missing": 0
+    },
+    "dose_bands_weighted": [
+      {
+        "category": "0.2-0.5",
+        "weighted_n": 577.0,
+        "weighted_prop": 0.827834
+      },
+      {
+        "category": "not_weight_normalized",
+        "weighted_n": 120.0,
+        "weighted_prop": 0.172166
+      }
+    ],
+    "timing_phase_weighted": [
+      {
+        "category": "intra_op",
+        "weighted_n": 577.0,
+        "weighted_prop": 0.827834
+      },
+      {
+        "category": "peri_multi",
+        "weighted_n": 120.0,
+        "weighted_prop": 0.172166
+      }
+    ],
+    "route_weighted": [
+      {
+        "category": "IV",
+        "weighted_n": 697.0,
+        "weighted_prop": 1.0
+      }
+    ],
+    "infusion_midpoint_distribution": {
+      "median": 0.475,
+      "q1": 0.4625,
+      "q3": 0.4875,
+      "n_trials": 2
+    }
+  }
+}

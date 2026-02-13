@@ -1,0 +1,23 @@
+# Comparator dictionary for dexmedetomidine vs placebo/saline filtering.
+include_terms:
+  - saline
+  - placebo
+  - equivolume saline
+  - usual care
+  - sham
+
+# Active-control terms are exclusionary unless no include terms are found.
+exclude_terms:
+  - propofol
+  - remifentanil
+  - midazolam
+  - morphine
+  - ketamine
+  - clonidine
+  - dexmedetomidine
+  - fentanyl
+  - sevoflurane
+  - isoflurane
+  - desflurane
+  - xenon
+  - volatile

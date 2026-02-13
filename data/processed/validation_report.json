@@ -1,0 +1,14 @@
+{
+  "n_trials_curated": 49,
+  "n_review_queue": 47,
+  "n_unresolved_critical": 0,
+  "critical_flags": [
+    "bolus_out_of_range",
+    "comparator_not_placebo",
+    "infusion_out_of_range",
+    "infusion_range_invalid",
+    "missing_n_total",
+    "missing_study_or_year"
+  ],
+  "allow_unresolved": false
+}

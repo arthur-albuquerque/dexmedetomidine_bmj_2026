@@ -1,0 +1,26 @@
+{
+  "li_2023": {
+    "notes": "User adjudication provided as 0.6 mg/kg bolus + 0.4 mg/kg/h infusion during surgery. Interpreted as mcg-scale dex regimen for physiologic plausibility.",
+    "bolus_value": 0.6,
+    "bolus_unit": "mcg/kg",
+    "infusion_low": 0.4,
+    "infusion_high": 0.4,
+    "infusion_unit": "mcg/kg/h",
+    "infusion_weight_normalized": true,
+    "timing_phase": "intra_op"
+  },
+  "momeni_2021": {
+    "notes": "User adjudication duplicated for Momeni 2021. Interpreted as mcg-scale dex regimen.",
+    "infusion_low": 0.4,
+    "infusion_high": 0.4,
+    "infusion_unit": "mcg/kg/h",
+    "infusion_weight_normalized": true,
+    "timing_phase": "intra_op"
+  },
+  "xing_2021": {
+    "notes": "User adjudication provided as Xi/Xing 2021: 0.5 mg/kg bolus during surgery. Interpreted as 0.5 mcg/kg dex bolus.",
+    "bolus_value": 0.5,
+    "bolus_unit": "mcg/kg",
+    "timing_phase": "intra_op"
+  }
+}
