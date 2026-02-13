@@ -4,6 +4,13 @@
   --muted: #4f6f8b;
   --panel: #ffffff;
   --line: #d7e4f0;
+  --panel-shadow: rgba(22, 50, 75, 0.08);
+  --table-head: #f8fbff;
+  --table-row-alt: #fbfdff;
+  --input-bg: #ffffff;
+  --hero-a: #0f3a62;
+  --hero-b: #1c5f96;
+  --hero-c: #20818b;
   --brand: #1f6fb2;
   --brand-dark: #154f82;
   --teal: #1f8f85;
@@ -15,14 +22,29 @@
   box-sizing: border-box;
 }
 
+body.theme-dark {
+  --bg: #0b1725;
+  --ink: #d8e7f5;
+  --muted: #9bb3ca;
+  --panel: #132537;
+  --line: #2a4157;
+  --panel-shadow: rgba(0, 0, 0, 0.35);
+  --table-head: #162b3f;
+  --table-row-alt: #112335;
+  --input-bg: #0f1f30;
+  --hero-a: #061726;
+  --hero-b: #0a3a5b;
+  --hero-c: #1f6a73;
+}
+
 body {
   margin: 0;
   color: var(--ink);
   font-family: 'IBM Plex Sans', sans-serif;
   background:
-    radial-gradient(circle at 7% 0%, #ddeefe 0, transparent 34%),
-    radial-gradient(circle at 100% 8%, #def5f2 0, transparent 30%),
-    linear-gradient(180deg, #f5f9ff 0%, #f2f7fb 75%);
+    radial-gradient(circle at 7% 0%, color-mix(in oklab, var(--brand) 16%, transparent) 0, transparent 34%),
+    radial-gradient(circle at 100% 8%, color-mix(in oklab, var(--teal) 18%, transparent) 0, transparent 30%),
+    linear-gradient(180deg, color-mix(in oklab, var(--bg) 92%, #ffffff) 0%, var(--bg) 75%);
 }
 
 .page {
@@ -38,8 +60,15 @@ body {
   padding: 1.3rem;
   border-radius: 22px;
   color: #f7fbff;
-  background: linear-gradient(120deg, #0f3a62, #1c5f96 52%, #20818b);
+  background: linear-gradient(120deg, var(--hero-a), var(--hero-b) 52%, var(--hero-c));
   box-shadow: 0 16px 32px rgba(15, 58, 98, 0.24);
+}
+
+.hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 .kicker {
@@ -66,6 +95,22 @@ h1 {
   margin: 0.55rem 0 0;
   color: #dbefff;
   max-width: 72ch;
+}
+
+.theme-btn {
+  min-height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.16);
+  color: #f4f9ff;
+  padding: 0.35rem 0.82rem;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.theme-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
 }
 
 .scope-pill {
@@ -140,7 +185,7 @@ h1 {
   border-radius: 18px;
   background: var(--panel);
   border: 1px solid var(--line);
-  box-shadow: 0 9px 20px rgba(22, 50, 75, 0.08);
+  box-shadow: 0 9px 20px var(--panel-shadow);
 }
 
 .panel h2 {
@@ -150,7 +195,7 @@ h1 {
 
 .intro-panel p {
   margin: 0;
-  color: #30506d;
+  color: var(--muted);
   line-height: 1.45;
 }
 
@@ -188,7 +233,7 @@ h1 {
 label {
   display: grid;
   gap: 0.22rem;
-  color: #355575;
+  color: var(--muted);
   font-size: 0.82rem;
 }
 
@@ -198,7 +243,7 @@ select {
   width: 100%;
   border-radius: 11px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--input-bg);
   padding: 0.54rem 0.62rem;
   font: inherit;
   color: var(--ink);
@@ -229,39 +274,53 @@ select:focus,
 
 .table-caption {
   margin: 0 0 0.62rem;
-  color: #4a6782;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
 .table-wrap {
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid #e6eef7;
+  border: 1px solid var(--line);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.86rem;
-  background: #ffffff;
+  background: var(--panel);
 }
 
 th,
 td {
-  border-bottom: 1px solid #ebf1f8;
+  border-bottom: 1px solid var(--line);
   padding: 0.56rem 0.5rem;
   vertical-align: top;
   text-align: left;
 }
 
 th {
-  color: #2f5172;
+  color: var(--ink);
   font-weight: 700;
-  background: #f8fbff;
+  background: var(--table-head);
 }
 
 tbody tr:nth-child(even) {
-  background: #fbfdff;
+  background: var(--table-row-alt);
+}
+
+.table-filter-row th {
+  padding: 0.38rem 0.42rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table-filter-row input,
+.table-filter-row select {
+  min-height: 34px;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.45rem;
 }
 
 .rob-pill {
@@ -296,8 +355,8 @@ tbody tr:nth-child(even) {
   padding: 0.8rem 0.95rem;
   border-radius: 14px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.78);
-  color: #2f5172;
+  background: color-mix(in oklab, var(--panel) 90%, transparent);
+  color: var(--muted);
   font-size: 0.84rem;
 }
 
@@ -315,7 +374,7 @@ tbody tr:nth-child(even) {
 .source-link {
   display: inline-flex;
   align-items: center;
-  color: #16324b;
+  color: var(--ink);
 }
 
 .source-link:hover {
@@ -348,6 +407,11 @@ tbody tr:nth-child(even) {
   }
 
   .panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-topline {
     flex-direction: column;
     align-items: flex-start;
   }

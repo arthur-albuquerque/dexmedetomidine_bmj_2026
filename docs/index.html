@@ -17,7 +17,10 @@
     <main class="page">
       <header class="hero" aria-label="Review header">
         <div class="hero-main">
-          <p class="kicker">Clinical Evidence Dashboard</p>
+          <div class="hero-topline">
+            <p class="kicker">Clinical Evidence Dashboard</p>
+            <button id="theme-toggle" class="theme-btn" type="button" aria-label="Toggle dark mode">Dark mode</button>
+          </div>
           <h1>Dexmedetomidine Dosing and Timing in Postoperative Delirium Prevention</h1>
           <p class="subtitle">
             Designed for rapid clinical interpretation of how dexmedetomidine was administered across eligible trials.
@@ -58,7 +61,7 @@
       <section class="panel intro-panel" aria-label="Interpretation guidance">
         <h2>How to Read This Page</h2>
         <p>
-          The charts display <strong>number of trials</strong> (not weighted values). Use timing filters to isolate when dexmedetomidine was given:
+          The charts display <strong>number of trials</strong>. Use timing filters to isolate when dexmedetomidine was given:
           <strong>Pre-operatively</strong>, <strong>Intra-operatively</strong>, or <strong>Post-operatively</strong>.
         </p>
       </section>
@@ -138,6 +141,27 @@
                 <th>Infusion</th>
                 <th>Timing of intervention</th>
                 <th>Route</th>
+              </tr>
+              <tr class="table-filter-row">
+                <th><input id="tbl-filter-study" type="text" placeholder="Filter study" /></th>
+                <th><input id="tbl-filter-country" type="text" placeholder="Filter country" /></th>
+                <th>
+                  <select id="tbl-filter-rob">
+                    <option value="all">All</option>
+                  </select>
+                </th>
+                <th><input id="tbl-filter-bolus" type="text" placeholder="Filter bolus" /></th>
+                <th><input id="tbl-filter-infusion" type="text" placeholder="Filter infusion" /></th>
+                <th>
+                  <select id="tbl-filter-timing">
+                    <option value="all">All</option>
+                  </select>
+                </th>
+                <th>
+                  <select id="tbl-filter-route">
+                    <option value="all">All</option>
+                  </select>
+                </th>
               </tr>
             </thead>
             <tbody id="trials-body"></tbody>
