@@ -283,6 +283,12 @@ select:focus,
   min-height: 330px;
 }
 
+.chart-fallback {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .table-caption {
   margin: 0 0 0.62rem;
   color: var(--muted);

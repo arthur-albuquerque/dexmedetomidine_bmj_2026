@@ -112,6 +112,16 @@ function countTrials(rows, getter) {
   return map;
 }
 
+function renderChartFallback(containerId, message) {
+  const element = document.getElementById(containerId);
+  if (!element) return;
+  element.innerHTML = `<p class="chart-fallback">${escapeHtml(message)}</p>`;
+}
+
+function hasPlotly() {
+  return typeof window !== 'undefined' && typeof window.Plotly !== 'undefined';
+}
+
 function formatBolus(row) {
   if (row.bolus_value == null) return 'Not reported';
   return `${row.bolus_value} ${row.bolus_unit || ''}`.trim();
@@ -159,6 +169,13 @@ function applyTableFilters() {
 }
 
 function renderStats() {
+  const totalNode = document.getElementById('trials-total');
+  const participantsNode = document.getElementById('participants-total');
+  const intraNode = document.getElementById('trials-intra');
+  const postNode = document.getElementById('trials-post');
+  const preNode = document.getElementById('trials-pre');
+  if (!totalNode || !participantsNode || !intraNode || !postNode || !preNode) return;
+
   const totalTrials = state.tableFiltered.length;
   const participants = state.tableFiltered.reduce((acc, row) => acc + Number(row.n_total || 0), 0);
 
@@ -166,21 +183,27 @@ function renderStats() {
   const postTrials = state.tableFiltered.filter((row) => row.timing_phase === 'post_op').length;
   const preTrials = state.tableFiltered.filter((row) => row.timing_phase === 'pre_op').length;
 
-  document.getElementById('trials-total').textContent = String(totalTrials);
-  document.getElementById('participants-total').textContent = participants.toLocaleString();
-  document.getElementById('trials-intra').textContent = String(intraTrials);
-  document.getElementById('trials-post').textContent = String(postTrials);
-  document.getElementById('trials-pre').textContent = String(preTrials);
+  totalNode.textContent = String(totalTrials);
+  participantsNode.textContent = participants.toLocaleString();
+  intraNode.textContent = String(intraTrials);
+  postNode.textContent = String(postTrials);
+  preNode.textContent = String(preTrials);
 }
 
 function renderDoseChart() {
+  if (!document.getElementById('dose-chart')) return;
+  if (!hasPlotly()) {
+    renderChartFallback('dose-chart', 'Chart unavailable: Plotly failed to load.');
+    return;
+  }
+
   const isDark = document.body.classList.contains('theme-dark');
   const counts = countTrials(state.tableFiltered, (row) => doseBand(row));
   const keys = DOSE_BAND_ORDER.filter((key) => counts.has(key));
   const labels = keys.map((key) => doseBandLabel(key));
   const values = keys.map((key) => counts.get(key));
 
-  Plotly.react(
+  window.Plotly.react(
     'dose-chart',
     [
       {
@@ -221,13 +244,19 @@ function renderDoseChart() {
 }
 
 function renderTimingChart() {
+  if (!document.getElementById('timing-chart')) return;
+  if (!hasPlotly()) {
+    renderChartFallback('timing-chart', 'Chart unavailable: Plotly failed to load.');
+    return;
+  }
+
   const isDark = document.body.classList.contains('theme-dark');
   const counts = countTrials(state.tableFiltered, (row) => row.timing_phase || 'unknown');
   const keys = TIMING_ORDER.filter((key) => counts.has(key));
   const labels = keys.map((key) => timingLabel(key));
   const values = keys.map((key) => counts.get(key));
 
-  Plotly.react(
+  window.Plotly.react(
     'timing-chart',
     [
       {
@@ -281,6 +310,7 @@ function normalizeStudyUrl(rawUrl) {
 
 function renderTable() {
   const body = document.getElementById('trials-body');
+  if (!body) return;
   body.innerHTML = '';
 
   state.tableFiltered.forEach((row) => {
@@ -306,14 +336,34 @@ function renderTable() {
 function rerender() {
   applyFilters();
   applyTableFilters();
-  renderStats();
-  renderDoseChart();
-  renderTimingChart();
-  renderTable();
+  try {
+    renderStats();
+  } catch (error) {
+    console.error('renderStats failed', error);
+  }
+  try {
+    renderDoseChart();
+  } catch (error) {
+    console.error('renderDoseChart failed', error);
+    renderChartFallback('dose-chart', 'Chart unavailable due to render error.');
+  }
+  try {
+    renderTimingChart();
+  } catch (error) {
+    console.error('renderTimingChart failed', error);
+    renderChartFallback('timing-chart', 'Chart unavailable due to render error.');
+  }
+  try {
+    renderTable();
+  } catch (error) {
+    console.error('renderTable failed', error);
+  }
 }
 
 function bindMultiSelectFilter(id, targetState, key) {
-  document.getElementById(id).addEventListener('change', (event) => {
+  const select = document.getElementById(id);
+  if (!select) return;
+  select.addEventListener('change', (event) => {
     targetState[key] = selectedValuesFromSelect(event.target);
     rerender();
   });
@@ -321,6 +371,7 @@ function bindMultiSelectFilter(id, targetState, key) {
 
 function clearMultiSelect(id) {
   const select = document.getElementById(id);
+  if (!select) return;
   Array.from(select.options).forEach((option) => {
     option.selected = false;
   });
@@ -328,6 +379,7 @@ function clearMultiSelect(id) {
 
 function populateSelect(id, values, labeler) {
   const select = document.getElementById(id);
+  if (!select) return;
   select.innerHTML = '';
   values.forEach((value) => {
     const option = document.createElement('option');
@@ -381,6 +433,18 @@ async function init() {
   populateSelect('tbl-filter-timing', timingValues, (value) => timingLabel(value));
   populateSelect('tbl-filter-route', routeValues, (value) => routeLabel(value));
 
+  clearMultiSelect('rob-filter');
+  clearMultiSelect('timing-filter');
+  clearMultiSelect('route-filter');
+  clearMultiSelect('dose-filter');
+  clearMultiSelect('tbl-filter-study');
+  clearMultiSelect('tbl-filter-country');
+  clearMultiSelect('tbl-filter-rob');
+  clearMultiSelect('tbl-filter-bolus');
+  clearMultiSelect('tbl-filter-infusion');
+  clearMultiSelect('tbl-filter-timing');
+  clearMultiSelect('tbl-filter-route');
+
   bindMultiSelectFilter('rob-filter', state.filters, 'rob');
   bindMultiSelectFilter('timing-filter', state.filters, 'timing');
   bindMultiSelectFilter('route-filter', state.filters, 'route');
@@ -393,7 +457,9 @@ async function init() {
   bindMultiSelectFilter('tbl-filter-timing', state.tableFilters, 'timing');
   bindMultiSelectFilter('tbl-filter-route', state.tableFilters, 'route');
 
-  document.getElementById('reset-filters').addEventListener('click', () => {
+  const resetButton = document.getElementById('reset-filters');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
     state.filters = { rob: [], timing: [], route: [], dose: [] };
     state.tableFilters = { study: [], country: [], rob: [], bolus: [], infusion: [], timing: [], route: [] };
     clearMultiSelect('rob-filter');
@@ -408,13 +474,17 @@ async function init() {
     clearMultiSelect('tbl-filter-timing');
     clearMultiSelect('tbl-filter-route');
     rerender();
-  });
+    });
+  }
 
-  document.getElementById('theme-toggle').addEventListener('click', () => {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
     const next = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
     setTheme(next);
     rerender();
-  });
+    });
+  }
 
   rerender();
 }
