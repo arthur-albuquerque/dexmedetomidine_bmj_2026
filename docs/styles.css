@@ -236,9 +236,15 @@ h1 {
   font-size: 0.82rem;
 }
 
+.filter-field,
 label {
   display: grid;
   gap: 0.22rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.filter-label {
   color: var(--muted);
   font-size: 0.82rem;
 }
@@ -255,16 +261,87 @@ select {
   color: var(--ink);
 }
 
-.multi-select {
-  min-height: 118px;
-  padding: 0.35rem 0.45rem;
-}
-
 input:focus,
 select:focus,
 .secondary-btn:focus {
   outline: 3px solid rgba(31, 111, 178, 0.24);
   outline-offset: 2px;
+}
+
+.filter-popover {
+  position: relative;
+}
+
+.popover-trigger {
+  list-style: none;
+  min-height: 44px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: var(--input-bg);
+  padding: 0.54rem 0.72rem;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.popover-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.popover-trigger::after {
+  content: '▾';
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.filter-popover[open] .popover-trigger {
+  border-color: #9dbdd8;
+  box-shadow: 0 0 0 3px rgba(31, 111, 178, 0.14);
+}
+
+.filter-popover[open] .popover-trigger::after {
+  content: '▴';
+}
+
+.popover-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  max-height: 260px;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 10px 24px var(--panel-shadow);
+  padding: 0.45rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  padding: 0.35rem 0.35rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.filter-option:hover {
+  background: color-mix(in oklab, var(--brand) 10%, transparent);
+}
+
+.filter-option input {
+  min-height: auto;
+  width: auto;
+  margin: 0;
 }
 
 .chart-grid {

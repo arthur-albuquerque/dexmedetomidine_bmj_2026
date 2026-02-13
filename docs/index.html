@@ -74,35 +74,37 @@
         <p class="filter-note">You can select multiple categories in each filter.</p>
 
         <div class="filters-grid">
-          <label>
-            RoB2 overall
-            <select id="rob-filter" class="multi-select" multiple size="4">
-            </select>
-          </label>
+          <div class="filter-field">
+            <span class="filter-label">RoB2 overall</span>
+            <details class="filter-popover" id="rob-filter">
+              <summary class="popover-trigger">All risk categories</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
 
-          <label>
-            Timing of intervention
-            <select id="timing-filter" class="multi-select" multiple size="4">
-            </select>
-          </label>
+          <div class="filter-field">
+            <span class="filter-label">Timing of intervention</span>
+            <details class="filter-popover" id="timing-filter">
+              <summary class="popover-trigger">All timing categories</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
 
-          <label>
-            Route
-            <select id="route-filter" class="multi-select" multiple size="4">
-            </select>
-          </label>
+          <div class="filter-field">
+            <span class="filter-label">Route</span>
+            <details class="filter-popover" id="route-filter">
+              <summary class="popover-trigger">All routes</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
 
-          <label>
-            Infusion dose band
-            <select id="dose-filter" class="multi-select" multiple size="6">
-              <option value="0-0.2">0.0 to 0.2 mcg/kg/h</option>
-              <option value="0.2-0.5">0.2 to 0.5 mcg/kg/h</option>
-              <option value="0.5-0.8">0.5 to 0.8 mcg/kg/h</option>
-              <option value=">0.8">Above 0.8 mcg/kg/h</option>
-              <option value="not_reported">Infusion not reported</option>
-              <option value="not_weight_normalized">Infusion not weight-normalized</option>
-            </select>
-          </label>
+          <div class="filter-field">
+            <span class="filter-label">Infusion dose band</span>
+            <details class="filter-popover" id="dose-filter">
+              <summary class="popover-trigger">All dose bands</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
         </div>
       </section>
 
@@ -124,34 +126,55 @@
         <p class="filter-note">You can select multiple categories in each table filter.</p>
 
         <div class="table-filters-grid">
-          <label>
-            Study
-            <select id="tbl-filter-study" class="multi-select" multiple size="6"></select>
-          </label>
-          <label>
-            Country
-            <select id="tbl-filter-country" class="multi-select" multiple size="6"></select>
-          </label>
-          <label>
-            RoB2
-            <select id="tbl-filter-rob" class="multi-select" multiple size="4"></select>
-          </label>
-          <label>
-            Bolus
-            <select id="tbl-filter-bolus" class="multi-select" multiple size="6"></select>
-          </label>
-          <label>
-            Infusion
-            <select id="tbl-filter-infusion" class="multi-select" multiple size="6"></select>
-          </label>
-          <label>
-            Timing
-            <select id="tbl-filter-timing" class="multi-select" multiple size="4"></select>
-          </label>
-          <label>
-            Route
-            <select id="tbl-filter-route" class="multi-select" multiple size="4"></select>
-          </label>
+          <div class="filter-field">
+            <span class="filter-label">Study</span>
+            <details class="filter-popover" id="tbl-filter-study">
+              <summary class="popover-trigger">All studies</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Country</span>
+            <details class="filter-popover" id="tbl-filter-country">
+              <summary class="popover-trigger">All countries</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">RoB2</span>
+            <details class="filter-popover" id="tbl-filter-rob">
+              <summary class="popover-trigger">All risk categories</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Bolus</span>
+            <details class="filter-popover" id="tbl-filter-bolus">
+              <summary class="popover-trigger">All bolus values</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Infusion</span>
+            <details class="filter-popover" id="tbl-filter-infusion">
+              <summary class="popover-trigger">All infusion values</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Timing</span>
+            <details class="filter-popover" id="tbl-filter-timing">
+              <summary class="popover-trigger">All timing categories</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Route</span>
+            <details class="filter-popover" id="tbl-filter-route">
+              <summary class="popover-trigger">All routes</summary>
+              <div class="popover-menu"></div>
+            </details>
+          </div>
         </div>
 
         <div class="table-wrap">
@@ -194,6 +217,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260213-1"></script>
+    <script type="module" src="./app.js?v=20260213-2"></script>
   </body>
 </html>

@@ -72,8 +72,91 @@ function matchesMultiSelect(value, selectedValues) {
   return selectedValues.includes(value);
 }
 
-function selectedValuesFromSelect(selectElement) {
-  return Array.from(selectElement.selectedOptions || []).map((option) => option.value);
+function summarizeFilterSelection(selectedValues, labeler, allLabel) {
+  if (!selectedValues || selectedValues.length === 0) return allLabel;
+  if (selectedValues.length === 1) return labeler(selectedValues[0]);
+  return `${selectedValues.length} selected`;
+}
+
+function closeAllFilterPopovers() {
+  document.querySelectorAll('.filter-popover[open]').forEach((element) => {
+    element.open = false;
+  });
+}
+
+function bindPopoverDismissBehavior() {
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest('.filter-popover')) return;
+    closeAllFilterPopovers();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeAllFilterPopovers();
+    }
+  });
+}
+
+function setupCheckboxPopoverFilter({
+  id,
+  values,
+  labeler,
+  stateGroup,
+  stateKey,
+  allLabel
+}) {
+  const details = document.getElementById(id);
+  if (!details) return () => {};
+  const trigger = details.querySelector('.popover-trigger');
+  const menu = details.querySelector('.popover-menu');
+  if (!trigger || !menu) return () => {};
+
+  menu.innerHTML = '';
+  const checkboxNodes = [];
+
+  values.forEach((value, index) => {
+    const checkboxId = `${id}-opt-${index}`;
+    const option = document.createElement('label');
+    option.className = 'filter-option';
+    option.setAttribute('for', checkboxId);
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = checkboxId;
+    checkbox.value = value;
+
+    const text = document.createElement('span');
+    text.textContent = labeler(value);
+
+    option.appendChild(checkbox);
+    option.appendChild(text);
+    menu.appendChild(option);
+    checkboxNodes.push(checkbox);
+  });
+
+  function syncFromState() {
+    const selected = stateGroup[stateKey] || [];
+    checkboxNodes.forEach((checkbox) => {
+      checkbox.checked = selected.includes(checkbox.value);
+    });
+    trigger.textContent = summarizeFilterSelection(selected, labeler, allLabel);
+  }
+
+  checkboxNodes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      const selectedSet = new Set(
+        checkboxNodes.filter((node) => node.checked).map((node) => node.value)
+      );
+      stateGroup[stateKey] = values.filter((value) => selectedSet.has(value));
+      syncFromState();
+      rerender();
+    });
+  });
+
+  syncFromState();
+  return syncFromState;
 }
 
 function parseFlags(raw) {
@@ -360,35 +443,6 @@ function rerender() {
   }
 }
 
-function bindMultiSelectFilter(id, targetState, key) {
-  const select = document.getElementById(id);
-  if (!select) return;
-  select.addEventListener('change', (event) => {
-    targetState[key] = selectedValuesFromSelect(event.target);
-    rerender();
-  });
-}
-
-function clearMultiSelect(id) {
-  const select = document.getElementById(id);
-  if (!select) return;
-  Array.from(select.options).forEach((option) => {
-    option.selected = false;
-  });
-}
-
-function populateSelect(id, values, labeler) {
-  const select = document.getElementById(id);
-  if (!select) return;
-  select.innerHTML = '';
-  values.forEach((value) => {
-    const option = document.createElement('option');
-    option.value = value;
-    option.textContent = labeler(value);
-    select.appendChild(option);
-  });
-}
-
 function setTheme(theme) {
   const isDark = theme === 'dark';
   document.body.classList.toggle('theme-dark', isDark);
@@ -421,59 +475,108 @@ async function init() {
   const countryValues = [...new Set(state.trials.map((row) => row.country || 'Not reported'))].sort((a, b) => a.localeCompare(b));
   const bolusValues = [...new Set(state.trials.map((row) => formatBolus(row)))].sort((a, b) => a.localeCompare(b));
   const infusionValues = [...new Set(state.trials.map((row) => formatInfusion(row)))].sort((a, b) => a.localeCompare(b));
+  const doseValues = DOSE_BAND_ORDER;
 
-  populateSelect('rob-filter', robValues, (value) => value);
-  populateSelect('timing-filter', timingValues, (value) => timingLabel(value));
-  populateSelect('route-filter', routeValues, (value) => routeLabel(value));
-  populateSelect('tbl-filter-study', studyValues, (value) => value);
-  populateSelect('tbl-filter-country', countryValues, (value) => value);
-  populateSelect('tbl-filter-rob', robValues, (value) => value);
-  populateSelect('tbl-filter-bolus', bolusValues, (value) => value);
-  populateSelect('tbl-filter-infusion', infusionValues, (value) => value);
-  populateSelect('tbl-filter-timing', timingValues, (value) => timingLabel(value));
-  populateSelect('tbl-filter-route', routeValues, (value) => routeLabel(value));
+  const refreshPopoverUIs = [
+    setupCheckboxPopoverFilter({
+      id: 'rob-filter',
+      values: robValues,
+      labeler: (value) => value,
+      stateGroup: state.filters,
+      stateKey: 'rob',
+      allLabel: 'All risk categories'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'timing-filter',
+      values: timingValues,
+      labeler: (value) => timingLabel(value),
+      stateGroup: state.filters,
+      stateKey: 'timing',
+      allLabel: 'All timing categories'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'route-filter',
+      values: routeValues,
+      labeler: (value) => routeLabel(value),
+      stateGroup: state.filters,
+      stateKey: 'route',
+      allLabel: 'All routes'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'dose-filter',
+      values: doseValues,
+      labeler: (value) => doseBandLabel(value),
+      stateGroup: state.filters,
+      stateKey: 'dose',
+      allLabel: 'All dose bands'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-study',
+      values: studyValues,
+      labeler: (value) => value,
+      stateGroup: state.tableFilters,
+      stateKey: 'study',
+      allLabel: 'All studies'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-country',
+      values: countryValues,
+      labeler: (value) => value,
+      stateGroup: state.tableFilters,
+      stateKey: 'country',
+      allLabel: 'All countries'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-rob',
+      values: robValues,
+      labeler: (value) => value,
+      stateGroup: state.tableFilters,
+      stateKey: 'rob',
+      allLabel: 'All risk categories'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-bolus',
+      values: bolusValues,
+      labeler: (value) => value,
+      stateGroup: state.tableFilters,
+      stateKey: 'bolus',
+      allLabel: 'All bolus values'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-infusion',
+      values: infusionValues,
+      labeler: (value) => value,
+      stateGroup: state.tableFilters,
+      stateKey: 'infusion',
+      allLabel: 'All infusion values'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-timing',
+      values: timingValues,
+      labeler: (value) => timingLabel(value),
+      stateGroup: state.tableFilters,
+      stateKey: 'timing',
+      allLabel: 'All timing categories'
+    }),
+    setupCheckboxPopoverFilter({
+      id: 'tbl-filter-route',
+      values: routeValues,
+      labeler: (value) => routeLabel(value),
+      stateGroup: state.tableFilters,
+      stateKey: 'route',
+      allLabel: 'All routes'
+    })
+  ];
 
-  clearMultiSelect('rob-filter');
-  clearMultiSelect('timing-filter');
-  clearMultiSelect('route-filter');
-  clearMultiSelect('dose-filter');
-  clearMultiSelect('tbl-filter-study');
-  clearMultiSelect('tbl-filter-country');
-  clearMultiSelect('tbl-filter-rob');
-  clearMultiSelect('tbl-filter-bolus');
-  clearMultiSelect('tbl-filter-infusion');
-  clearMultiSelect('tbl-filter-timing');
-  clearMultiSelect('tbl-filter-route');
-
-  bindMultiSelectFilter('rob-filter', state.filters, 'rob');
-  bindMultiSelectFilter('timing-filter', state.filters, 'timing');
-  bindMultiSelectFilter('route-filter', state.filters, 'route');
-  bindMultiSelectFilter('dose-filter', state.filters, 'dose');
-  bindMultiSelectFilter('tbl-filter-study', state.tableFilters, 'study');
-  bindMultiSelectFilter('tbl-filter-country', state.tableFilters, 'country');
-  bindMultiSelectFilter('tbl-filter-rob', state.tableFilters, 'rob');
-  bindMultiSelectFilter('tbl-filter-bolus', state.tableFilters, 'bolus');
-  bindMultiSelectFilter('tbl-filter-infusion', state.tableFilters, 'infusion');
-  bindMultiSelectFilter('tbl-filter-timing', state.tableFilters, 'timing');
-  bindMultiSelectFilter('tbl-filter-route', state.tableFilters, 'route');
+  bindPopoverDismissBehavior();
 
   const resetButton = document.getElementById('reset-filters');
   if (resetButton) {
     resetButton.addEventListener('click', () => {
-    state.filters = { rob: [], timing: [], route: [], dose: [] };
-    state.tableFilters = { study: [], country: [], rob: [], bolus: [], infusion: [], timing: [], route: [] };
-    clearMultiSelect('rob-filter');
-    clearMultiSelect('timing-filter');
-    clearMultiSelect('route-filter');
-    clearMultiSelect('dose-filter');
-    clearMultiSelect('tbl-filter-study');
-    clearMultiSelect('tbl-filter-country');
-    clearMultiSelect('tbl-filter-rob');
-    clearMultiSelect('tbl-filter-bolus');
-    clearMultiSelect('tbl-filter-infusion');
-    clearMultiSelect('tbl-filter-timing');
-    clearMultiSelect('tbl-filter-route');
-    rerender();
+      state.filters = { rob: [], timing: [], route: [], dose: [] };
+      state.tableFilters = { study: [], country: [], rob: [], bolus: [], infusion: [], timing: [], route: [] };
+      refreshPopoverUIs.forEach((refresh) => refresh());
+      rerender();
     });
   }
 
