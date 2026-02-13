@@ -24,7 +24,7 @@ const DOSE_BAND_LABELS = {
   '0.5-0.8': '0.5 to 0.8 mcg/kg/h',
   '>0.8': 'Above 0.8 mcg/kg/h',
   bolus_only: 'Bolus only',
-  not_reported: 'Infusion not reported',
+  not_reported: 'Dosage not reported',
   not_weight_normalized: 'Infusion not weight-normalized'
 };
 
