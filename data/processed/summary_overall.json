@@ -1,71 +1,76 @@
 {
-  "n_trials": 49,
-  "n_participants": 11707,
+  "n_trials": 48,
+  "n_participants": 11467,
   "missingness": {
-    "bolus_missing": 34,
-    "infusion_missing": 13,
+    "bolus_missing": 31,
+    "infusion_missing": 12,
     "timing_missing": 0,
     "route_missing": 0
   },
   "dose_bands_weighted": [
     {
       "category": "not_weight_normalized",
-      "weighted_n": 4679.0,
-      "weighted_prop": 0.399675
+      "weighted_n": 4439.0,
+      "weighted_prop": 0.387111
     },
     {
       "category": "0-0.2",
       "weighted_n": 3310.0,
-      "weighted_prop": 0.282737
+      "weighted_prop": 0.288654
     },
     {
       "category": "0.2-0.5",
       "weighted_n": 3210.0,
-      "weighted_prop": 0.274195
+      "weighted_prop": 0.279934
     },
     {
       "category": "0.5-0.8",
       "weighted_n": 333.0,
-      "weighted_prop": 0.028445
+      "weighted_prop": 0.02904
     },
     {
       "category": ">0.8",
       "weighted_n": 175.0,
-      "weighted_prop": 0.014948
+      "weighted_prop": 0.015261
     }
   ],
   "timing_phase_weighted": [
     {
       "category": "intra_op",
       "weighted_n": 7584.0,
-      "weighted_prop": 0.647818
+      "weighted_prop": 0.661376
     },
     {
       "category": "post_op",
-      "weighted_n": 3351.0,
-      "weighted_prop": 0.286239
+      "weighted_n": 3111.0,
+      "weighted_prop": 0.2713
     },
     {
       "category": "pre_op",
       "weighted_n": 772.0,
-      "weighted_prop": 0.065943
+      "weighted_prop": 0.067324
     }
   ],
   "route_weighted": [
     {
       "category": "IV",
-      "weighted_n": 9948.0,
-      "weighted_prop": 0.849748
+      "weighted_n": 9708.0,
+      "weighted_prop": 0.846603
     },
     {
       "category": "IN+IV",
-      "weighted_n": 1474.0,
-      "weighted_prop": 0.125908
+      "weighted_n": 1359.0,
+      "weighted_prop": 0.118514
     },
     {
       "category": "IV+PO",
       "weighted_n": 285.0,
-      "weighted_prop": 0.024344
+      "weighted_prop": 0.024854
+    },
+    {
+      "category": "IN",
+      "weighted_n": 115.0,
+      "weighted_prop": 0.010029
     }
   ],
   "infusion_midpoint_distribution": {
@@ -74,5 +79,5 @@
     "q3": 0.5,
     "n_trials": 35
   },
-  "generated_at_utc": "2026-02-13T16:46:09.265190+00:00"
+  "generated_at_utc": "2026-02-13T19:59:25.667435+00:00"
 }

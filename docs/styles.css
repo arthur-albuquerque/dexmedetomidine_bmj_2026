@@ -211,7 +211,7 @@ h1 {
   min-height: 44px;
   border-radius: 12px;
   border: 1px solid var(--line);
-  background: #ffffff;
+  background: color-mix(in oklab, var(--panel) 92%, #ffffff);
   color: var(--ink);
   padding: 0.55rem 0.9rem;
   cursor: pointer;
@@ -219,8 +219,16 @@ h1 {
 }
 
 .secondary-btn:hover {
-  border-color: #bad0e4;
-  background: #f8fbff;
+  border-color: color-mix(in oklab, var(--brand) 40%, var(--line));
+  background: color-mix(in oklab, var(--panel) 86%, #ffffff);
+}
+
+#reset-filters {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 90;
+  box-shadow: 0 8px 20px var(--panel-shadow);
 }
 
 .filters-grid {

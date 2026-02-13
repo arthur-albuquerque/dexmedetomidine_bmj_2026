@@ -1,6 +1,6 @@
 {
-  "n_trials_curated": 49,
-  "n_review_queue": 47,
+  "n_trials_curated": 48,
+  "n_review_queue": 46,
   "n_unresolved_critical": 0,
   "critical_flags": [
     "bolus_out_of_range",

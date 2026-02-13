@@ -376,6 +376,11 @@ def build_canonical_rows(
         study_label = clean_study_label(row["study"])
         study_key = normalize_study_key(study_label)
         study_reference_number = parse_reference_number_from_study(row["study"])
+        adjudication = manual_adjudications.get(study_key)
+
+        # Allow explicit study-level exclusion via manual adjudication.
+        if adjudication and adjudication.get("exclude_trial") is True:
+            continue
 
         dex_arm_text = extract_dex_arm_text(row["intervention_arm"])
         control_text = clean_text(row["control_arm"])
@@ -417,7 +422,6 @@ def build_canonical_rows(
         timing_phase = classify_timing_phase(timing_raw, dex_arm_text)
         route_std = classify_route(route_raw, dex_arm_text)
 
-        adjudication = manual_adjudications.get(study_key)
         if adjudication:
             if "bolus_value" in adjudication:
                 bolus_value = adjudication["bolus_value"]
@@ -431,6 +435,8 @@ def build_canonical_rows(
                 )
             if "timing_phase" in adjudication:
                 timing_phase = adjudication["timing_phase"]
+            if "route_std" in adjudication:
+                route_std = adjudication["route_std"]
             flags.append("manual_adjudication_applied")
 
         rob_info = rob_lookup.get(study_key)

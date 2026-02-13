@@ -30,15 +30,14 @@ lv_2022_p8,Lv 2022,Some concerns,bolus_missing;rob_missing_defaulted,,8,data/raw
 ma_2013_p8,Ma 2013,Some concerns,bolus_missing;rob_missing_defaulted,,8,data/raw/delirium_list_of_articles.pdf
 massoumi_2019_p8,Massoumi 2019,Some concerns,rob_missing_defaulted,,8,data/raw/delirium_list_of_articles.pdf
 momeni_2021_p9,Momeni 2021,Low risk,bolus_missing;infusion_unit_mg_interpreted_as_mcg;manual_adjudication_applied,,9,data/raw/delirium_list_of_articles.pdf
-qu_2023_p10,Qu 2023,Low risk,bolus_missing;infusion_missing,,10,data/raw/delirium_list_of_articles.pdf
+qu_2023_p10,Qu 2023,Low risk,infusion_missing;manual_adjudication_applied,,10,data/raw/delirium_list_of_articles.pdf
 soh_2020_p11,Soh 2020,Low risk,bolus_missing;infusion_unit_mg_interpreted_as_mcg,,11,data/raw/delirium_list_of_articles.pdf
 su_2016_p11,Su 2016,Low risk,bolus_missing,,11,data/raw/delirium_list_of_articles.pdf
 tang_2022_p11,Tang 2022,Some concerns,bolus_missing;rob_missing_defaulted,,11,data/raw/delirium_list_of_articles.pdf
 turan_2020_p12,Turan 2020,Low risk,bolus_missing,,12,data/raw/delirium_list_of_articles.pdf
 van_norden_2021_p12,van Norden 2021,Low risk,bolus_missing;infusion_missing,,12,data/raw/delirium_list_of_articles.pdf
 wang_2023_p12,Wang 2023,Some concerns,bolus_missing;infusion_missing;rob_missing_defaulted,,12,data/raw/delirium_list_of_articles.pdf
-wu_2023_p13,Wu 2023,Some concerns,bolus_missing;infusion_missing;rob_missing_defaulted,,13,data/raw/delirium_list_of_articles.pdf
-xie_2023_p13,Xie 2023,Some concerns,bolus_missing;infusion_missing;rob_missing_defaulted,,13,data/raw/delirium_list_of_articles.pdf
+wu_2023_p13,Wu 2023,Some concerns,infusion_missing;manual_adjudication_applied;rob_missing_defaulted,,13,data/raw/delirium_list_of_articles.pdf
 xin_2021_p13,Xin 2021,Some concerns,bolus_missing;rob_unmatched_defaulted,,13,data/raw/delirium_list_of_articles.pdf
 xing_2021_p13,Xing 2021,Some concerns,dose_unit_mg_interpreted_as_mcg;infusion_missing;manual_adjudication_applied;rob_missing_defaulted,,13,data/raw/delirium_list_of_articles.pdf
 yang_2015_p13,Yang 2015,Low risk,bolus_missing,,13,data/raw/delirium_list_of_articles.pdf

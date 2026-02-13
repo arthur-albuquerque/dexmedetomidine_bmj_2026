@@ -1,10 +1,10 @@
 {
-  "generated_at_utc": "2026-02-13T16:46:09.265803+00:00",
+  "generated_at_utc": "2026-02-13T19:59:25.668128+00:00",
   "low_risk": {
     "n_trials": 14,
     "n_participants": 4916,
     "missingness": {
-      "bolus_missing": 11,
+      "bolus_missing": 10,
       "infusion_missing": 4,
       "timing_missing": 0,
       "route_missing": 0
@@ -63,68 +63,73 @@
     }
   },
   "some_concerns": {
-    "n_trials": 32,
-    "n_participants": 6094,
+    "n_trials": 31,
+    "n_participants": 5854,
     "missingness": {
-      "bolus_missing": 21,
-      "infusion_missing": 8,
+      "bolus_missing": 19,
+      "infusion_missing": 7,
       "timing_missing": 0,
       "route_missing": 0
     },
     "dose_bands_weighted": [
       {
         "category": "not_weight_normalized",
-        "weighted_n": 2489.0,
-        "weighted_prop": 0.408435
+        "weighted_n": 2249.0,
+        "weighted_prop": 0.384182
       },
       {
         "category": "0-0.2",
         "weighted_n": 1579.0,
-        "weighted_prop": 0.259107
+        "weighted_prop": 0.26973
       },
       {
         "category": "0.2-0.5",
         "weighted_n": 1518.0,
-        "weighted_prop": 0.249097
+        "weighted_prop": 0.25931
       },
       {
         "category": "0.5-0.8",
         "weighted_n": 333.0,
-        "weighted_prop": 0.054644
+        "weighted_prop": 0.056884
       },
       {
         "category": ">0.8",
         "weighted_n": 175.0,
-        "weighted_prop": 0.028717
+        "weighted_prop": 0.029894
       }
     ],
     "timing_phase_weighted": [
       {
         "category": "intra_op",
         "weighted_n": 4014.0,
-        "weighted_prop": 0.658681
+        "weighted_prop": 0.685685
       },
       {
         "category": "post_op",
-        "weighted_n": 1428.0,
-        "weighted_prop": 0.234329
+        "weighted_n": 1188.0,
+        "weighted_prop": 0.202938
       },
       {
         "category": "pre_op",
         "weighted_n": 652.0,
-        "weighted_prop": 0.10699
+        "weighted_prop": 0.111377
       }
     ],
     "route_weighted": [
       {
         "category": "IV",
-        "weighted_n": 5804.0,
-        "weighted_prop": 0.952412
+        "weighted_n": 5564.0,
+        "weighted_prop": 0.950461
       },
       {
         "category": "IN+IV",
-        "weighted_n": 290.0,
-        "weighted_prop": 0.047588
+        "weighted_n": 175.0,
+        "weighted_prop": 0.029894
+      },
+      {
+        "category": "IN",
+        "weighted_n": 115.0,
+        "weighted_prop": 0.019645
       }
     ],
     "infusion_midpoint_distribution": {

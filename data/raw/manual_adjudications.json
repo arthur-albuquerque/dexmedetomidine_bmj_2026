@@ -22,5 +22,20 @@
     "bolus_value": 0.5,
     "bolus_unit": "mcg/kg",
     "timing_phase": "intra_op"
+  },
+  "qu_2023": {
+    "notes": "Manual correction requested by user.",
+    "bolus_value": 1.0,
+    "bolus_unit": "mcg/kg"
+  },
+  "wu_2023": {
+    "notes": "Manual correction requested by user.",
+    "bolus_value": 2.0,
+    "bolus_unit": "μg/kg daily",
+    "route_std": "IN"
+  },
+  "xie_2023": {
+    "notes": "Exclude because intervention combines dexmedetomidine with sufentanil.",
+    "exclude_trial": true
   }
 }
