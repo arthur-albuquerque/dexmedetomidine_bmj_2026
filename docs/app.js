@@ -32,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260213-9';
+const DATA_VERSION = '20260213-10';
 
 const state = {
   trials: [],
@@ -401,7 +401,8 @@ function renderDoseChart() {
         showline: false,
         showgrid: false,
         zeroline: false,
-        showticklabels: true
+        showticklabels: false,
+        ticks: ''
       }
     },
     { responsive: true, displayModeBar: false }
