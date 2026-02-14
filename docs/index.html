@@ -178,7 +178,7 @@
               \log(\mathrm{OR}_i)=\theta + u_i
               \]
             </p>
-            <p>We fitted this in Bayesian R package <code>brms</code> using the binomial likelihood with:</p>
+            <p>We fitted this in the Bayesian R package <a href="https://paulbuerkner.com/brms/" target="_blank" rel="noopener noreferrer"><code>brms</code></a> using the binomial likelihood with:</p>
             <pre><code>events | trials(total) ~ 0 + study + treat + (treat12 - 1 | study)</code></pre>
             <ul>
               <li><code>study</code>: fixed study-specific baseline log-odds (\(\gamma_i\)).</li>
@@ -313,6 +313,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260214-17"></script>
+    <script type="module" src="./app.js?v=20260214-18"></script>
   </body>
 </html>
