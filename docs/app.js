@@ -32,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260214-19';
+const DATA_VERSION = '20260214-20';
 const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
 const DEFAULT_META_X_LIMITS = [0.1, 3.5];
 const DEFAULT_META_X_TICKS = [0.1, 0.3, 0.7, 1, 3];
@@ -218,6 +218,13 @@ function normalizeTrial(row) {
     validation_flags: parseFlags(row.validation_flags),
     critical_flags: parseFlags(row.critical_flags)
   };
+}
+
+function constrainTrialsToMeta(trials, metaState) {
+  if (!metaState || !metaState.loaded || !(metaState.rowsByTrialId instanceof Map)) return trials;
+  if (metaState.rowsByTrialId.size === 0) return trials;
+  const allowedIds = new Set(metaState.rowsByTrialId.keys());
+  return trials.filter((row) => allowedIds.has(canonicalTrialId(row.trial_id)));
 }
 
 function doseBand(trial) {
@@ -1315,7 +1322,10 @@ async function init() {
     ensureMetaBundleShape();
   }
 
-  state.trials = trialsRaw.map((row) => normalizeTrial(row));
+  state.trials = constrainTrialsToMeta(
+    trialsRaw.map((row) => normalizeTrial(row)),
+    state.meta
+  );
 
   const robValues = [...new Set(state.trials.map((row) => row.rob_overall_std))].sort((a, b) => a.localeCompare(b));
   const timingValues = TIMING_ORDER.filter((key) => state.trials.some((row) => row.timing_phase === key));
