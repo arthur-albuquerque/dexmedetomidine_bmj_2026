@@ -32,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260214-20';
+const DATA_VERSION = '20260214-21';
 const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
 const DEFAULT_META_X_LIMITS = [0.1, 3.5];
 const DEFAULT_META_X_TICKS = [0.1, 0.3, 0.7, 1, 3];
@@ -1078,24 +1078,14 @@ function renderMetaForest() {
   }
   coverageNode.textContent = coverageNotes.length ? `${coverageNotes.join('; ')}.` : 'Showing all selected studies with posterior shrinkage and observed OR.';
 
-  const filteredCounts = selected.rows.reduce(
-    (acc, row) => {
-      acc.dex_events += row.dexEvents;
-      acc.dex_total += row.dexTotal;
-      acc.control_events += row.controlEvents;
-      acc.control_total += row.controlTotal;
-      return acc;
-    },
-    { dex_events: 0, dex_total: 0, control_events: 0, control_total: 0 }
-  );
-
   const overall = state.meta.overall || {};
+  const allCounts = state.meta.allCounts || {};
   const pooledRow = {
     displayLabel: 'Pooled Effect',
-    dexEvents: filteredCounts.dex_events,
-    dexTotal: filteredCounts.dex_total,
-    controlEvents: filteredCounts.control_events,
-    controlTotal: filteredCounts.control_total,
+    dexEvents: Number(allCounts.dex_events || 0),
+    dexTotal: Number(allCounts.dex_total || 0),
+    controlEvents: Number(allCounts.control_events || 0),
+    controlTotal: Number(allCounts.control_total || 0),
     shrinkageOr: overall.medianOr,
     shrinkageOrLow: overall.lowerOr,
     shrinkageOrHigh: overall.upperOr,
