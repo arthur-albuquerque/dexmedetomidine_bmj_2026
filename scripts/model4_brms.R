@@ -616,7 +616,7 @@ logor_plot <- patchwork::wrap_table(forest_table_left, space = "fixed") +
     widths = grid::unit(c(-1, 5.2, -1), c("null", "cm", "null"))
   ) +
   patchwork::plot_annotation(
-    caption = "Inspired by the bayesfoRest package",
+    caption = "Data visualization inspired by the bayesfoRest package",
     theme = ggplot2::theme(
       plot.caption.position = "plot",
       plot.caption = ggplot2::element_text(

@@ -128,6 +128,19 @@
         </article>
       </section>
 
+      <section
+        class="panel meta-analysis-panel tab-analysis-only"
+        id="meta-analysis-panel"
+        aria-label="Statistical analysis"
+      >
+        <h2>Bayesian Meta-Analysis</h2>
+        <p class="meta-note">
+          Uses a single pre-fitted Bayesian model. Filters control which study rows are shown; the pooled effect stays fixed from the full model fit.
+        </p>
+        <div id="meta-coverage-note" class="meta-coverage-note" role="status" aria-live="polite"></div>
+        <div id="meta-forest" class="meta-forest-wrap"></div>
+      </section>
+
       <section class="panel" aria-label="Trial table">
         <h2>Trial-Level Details</h2>
         <p class="filter-note">You can select multiple categories in each table filter.</p>
@@ -202,21 +215,12 @@
         </div>
       </section>
 
-      <section
-        class="panel meta-analysis-panel tab-analysis-only"
-        id="meta-analysis-panel"
-        aria-label="Statistical analysis"
-      >
-        <h2>Bayesian Meta-analysis (Model 4)</h2>
-        <p class="meta-note">
-          Uses a single pre-fitted Bayesian model. Filters control which study rows are shown; the pooled effect stays fixed from the full model fit.
-        </p>
-        <div id="meta-coverage-note" class="meta-coverage-note" role="status" aria-live="polite"></div>
-        <div id="meta-forest" class="meta-forest-wrap"></div>
-      </section>
-
       <footer class="app-footer" aria-label="App attribution">
-        <p>This app was built by Arthur M. Albuquerque, MD, using GPT-5.3-Codex.</p>
+        <p>
+          This app was built by
+          <a href="https://bsky.app/profile/aalbuquerque.bsky.social" target="_blank" rel="noopener noreferrer">Arthur M. Albuquerque, MD</a>,
+          using GPT-5.3-Codex.
+        </p>
         <p class="source-line">
           Source code:
           <a
@@ -237,6 +241,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260214-11"></script>
+    <script type="module" src="./app.js?v=20260214-12"></script>
   </body>
 </html>

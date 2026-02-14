@@ -534,6 +534,17 @@ tbody tr:nth-child(even) {
   height: 1rem;
 }
 
+.app-footer a {
+  color: var(--brand-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  color: var(--brand);
+  text-decoration: underline;
+}
+
 .meta-analysis-panel {
   position: relative;
 }
@@ -558,6 +569,7 @@ tbody tr:nth-child(even) {
   display: grid;
   grid-template-columns: 210px 145px 145px 340px 190px 190px;
   align-items: center;
+  grid-auto-rows: minmax(44px, auto);
   min-width: 1220px;
   border-top: 1px solid var(--line);
 }
@@ -571,6 +583,8 @@ tbody tr:nth-child(even) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
 }
 
 .meta-cell-head {
@@ -579,6 +593,9 @@ tbody tr:nth-child(even) {
   background: color-mix(in oklab, var(--table-head) 85%, var(--panel));
   color: var(--ink);
   white-space: pre-line;
+  min-height: 68px;
+  align-items: flex-end;
+  padding-bottom: 0.56rem;
 }
 
 .meta-study-col {
@@ -591,7 +608,9 @@ tbody tr:nth-child(even) {
 }
 
 .meta-plot-head {
-  padding: 0.2rem 0.12rem;
+  padding: 0.2rem 0.12rem 0.56rem;
+  display: flex;
+  align-items: flex-end;
 }
 
 .meta-favours {
@@ -606,13 +625,19 @@ tbody tr:nth-child(even) {
 .meta-plot-cell {
   padding: 0;
   border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
 }
 
 .meta-plot-svg,
 .meta-axis-svg {
   width: 100%;
-  height: 28px;
+  height: 34px;
   display: block;
+}
+
+.meta-axis-svg {
+  height: 56px;
 }
 
 .meta-row-pooled {
@@ -629,6 +654,8 @@ tbody tr:nth-child(even) {
 .meta-axis-cell {
   padding: 0;
   border-bottom: none;
+  display: flex;
+  align-items: flex-end;
 }
 
 .meta-footnote-row {
@@ -636,6 +663,7 @@ tbody tr:nth-child(even) {
   padding-top: 0.36rem;
   font-size: 0.8rem;
   color: var(--muted);
+  min-height: 30px;
 }
 
 .meta-inspiration {

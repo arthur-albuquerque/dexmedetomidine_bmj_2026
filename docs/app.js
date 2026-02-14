@@ -32,10 +32,14 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260214-11';
+const DATA_VERSION = '20260214-12';
 const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
 const DEFAULT_META_X_LIMITS = [0.1, 3.5];
 const DEFAULT_META_X_TICKS = [0.1, 0.3, 1, 3];
+const META_PLOT_WIDTH = 340;
+const META_PLOT_HEIGHT = 34;
+const META_PLOT_PAD_LEFT = 22;
+const META_PLOT_PAD_RIGHT = 16;
 
 const state = {
   trials: [],
@@ -654,6 +658,8 @@ function formatArmSuffix(dexArmLabel, dexArmIndex) {
   if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
     cleaned = cleaned.slice(1, -1).trim();
   }
+  cleaned = cleaned.replace(/^dex\s*\d+\s*,\s*/i, '').trim();
+  cleaned = cleaned.replace(/^dex\s*\d+\s*-\s*/i, '').trim();
   if (!cleaned) return `arm ${dexArmIndex}`;
   return cleaned;
 }
@@ -677,6 +683,22 @@ function createSvgNode(tagName, attrs = {}) {
     node.setAttribute(name, String(value));
   });
   return node;
+}
+
+function smoothDensity(values, passes = 1) {
+  if (!Array.isArray(values) || values.length < 5 || passes < 1) return values || [];
+  let output = values.slice();
+  for (let pass = 0; pass < passes; pass += 1) {
+    const next = output.slice();
+    for (let i = 2; i < output.length - 2; i += 1) {
+      next[i] =
+        (output[i - 2] + 2 * output[i - 1] + 3 * output[i] + 2 * output[i + 1] + output[i + 2]) / 9;
+    }
+    output = next;
+  }
+  const peak = Math.max(...output, 0);
+  if (peak <= 0) return output.map(() => 0);
+  return output.map((value) => value / peak);
 }
 
 function makeDensityPoints({
@@ -708,6 +730,17 @@ function pointsToPath(points) {
     .join(' ');
 }
 
+function metaXScaleFactory(xLimitsOr) {
+  const [xMin, xMax] = xLimitsOr;
+  const logMin = Math.log(xMin);
+  const logMax = Math.log(xMax);
+  const plotWidth = META_PLOT_WIDTH - META_PLOT_PAD_LEFT - META_PLOT_PAD_RIGHT;
+  return (orValue) => {
+    const ratio = (Math.log(orValue) - logMin) / (logMax - logMin);
+    return META_PLOT_PAD_LEFT + Math.max(0, Math.min(1, ratio)) * plotWidth;
+  };
+}
+
 function getMetaPalette() {
   const isDark = document.body.classList.contains('theme-dark');
   return {
@@ -733,20 +766,13 @@ function buildMetaRowPlotSvg(rowConfig) {
   } = rowConfig;
 
   const palette = getMetaPalette();
-  const width = 340;
-  const height = isPooled ? 34 : 28;
-  const padLeft = 14;
-  const padRight = 14;
-  const baselineY = isPooled ? 24 : 20;
-  const amplitude = isPooled ? 14.5 : 8.6;
+  const width = META_PLOT_WIDTH;
+  const height = META_PLOT_HEIGHT;
+  const baselineY = Math.round(height * 0.56);
+  const amplitude = isPooled ? 12.6 : 8.8;
   const [xMin, xMax] = xLimitsOr;
-  const logMin = Math.log(xMin);
-  const logMax = Math.log(xMax);
-  const plotWidth = width - padLeft - padRight;
-  const scaleX = (orValue) => {
-    const ratio = (Math.log(orValue) - logMin) / (logMax - logMin);
-    return padLeft + Math.max(0, Math.min(1, ratio)) * plotWidth;
-  };
+  const scaleX = metaXScaleFactory(xLimitsOr);
+  const densityNorm = isPooled ? smoothDensity(row.densityNorm || [], 7) : row.densityNorm || [];
 
   const svg = createSvgNode('svg', {
     class: 'meta-plot-svg',
@@ -756,9 +782,9 @@ function buildMetaRowPlotSvg(rowConfig) {
   });
 
   const baseline = createSvgNode('line', {
-    x1: padLeft,
+    x1: META_PLOT_PAD_LEFT,
     y1: baselineY,
-    x2: width - padRight,
+    x2: width - META_PLOT_PAD_RIGHT,
     y2: baselineY,
     stroke: palette.grid,
     'stroke-width': 1
@@ -813,7 +839,7 @@ function buildMetaRowPlotSvg(rowConfig) {
 
   const densityPoints = makeDensityPoints({
     gridOr,
-    densityNorm: row.densityNorm || [],
+    densityNorm,
     xMin,
     xMax,
     scaleX,
@@ -862,7 +888,7 @@ function buildMetaRowPlotSvg(rowConfig) {
     svg.appendChild(
       createSvgNode('circle', {
         cx: scaleX(row.crudeOr),
-        cy: baselineY - 7,
+        cy: baselineY - 2,
         r: 5.8,
         fill: palette.observedFill,
         stroke: palette.observedStroke,
@@ -876,19 +902,11 @@ function buildMetaRowPlotSvg(rowConfig) {
 
 function buildMetaAxisSvg({ xLimitsOr, xTicksOr }) {
   const palette = getMetaPalette();
-  const width = 340;
-  const height = 44;
-  const padLeft = 14;
-  const padRight = 14;
-  const axisY = 10;
+  const width = META_PLOT_WIDTH;
+  const height = 56;
+  const axisY = 12;
   const [xMin, xMax] = xLimitsOr;
-  const logMin = Math.log(xMin);
-  const logMax = Math.log(xMax);
-  const plotWidth = width - padLeft - padRight;
-  const scaleX = (orValue) => {
-    const ratio = (Math.log(orValue) - logMin) / (logMax - logMin);
-    return padLeft + Math.max(0, Math.min(1, ratio)) * plotWidth;
-  };
+  const scaleX = metaXScaleFactory(xLimitsOr);
 
   const svg = createSvgNode('svg', {
     class: 'meta-axis-svg',
@@ -899,9 +917,9 @@ function buildMetaAxisSvg({ xLimitsOr, xTicksOr }) {
 
   svg.appendChild(
     createSvgNode('line', {
-      x1: padLeft,
+      x1: META_PLOT_PAD_LEFT,
       y1: axisY,
-      x2: width - padRight,
+      x2: width - META_PLOT_PAD_RIGHT,
       y2: axisY,
       stroke: palette.vlineMain,
       'stroke-width': 1.7
@@ -923,9 +941,9 @@ function buildMetaAxisSvg({ xLimitsOr, xTicksOr }) {
     );
     const label = createSvgNode('text', {
       x,
-      y: axisY + 16,
+      y: axisY + 17,
       fill: palette.axisText,
-      'font-size': '11',
+      'font-size': '12.5',
       'text-anchor': 'middle',
       'font-family': 'IBM Plex Sans, sans-serif'
     });
@@ -935,9 +953,10 @@ function buildMetaAxisSvg({ xLimitsOr, xTicksOr }) {
 
   const axisTitle = createSvgNode('text', {
     x: width / 2,
-    y: height - 4,
+    y: height - 5,
     fill: palette.axisText,
-    'font-size': '11',
+    'font-size': '15.5',
+    'font-weight': '500',
     'text-anchor': 'middle',
     'font-family': 'IBM Plex Sans, sans-serif'
   });
@@ -1026,7 +1045,13 @@ function renderMetaForest() {
   if (selected.rows.length === 0) {
     const notes = [];
     if (selected.missingInMeta.length > 0) notes.push(`${selected.missingInMeta.length} study labels are not mapped to the meta-analysis table`);
-    if (selected.modelMissing.length > 0) notes.push(`${selected.modelMissing.length} studies do not have model summaries yet`);
+    if (selected.modelMissing.length > 0) {
+      notes.push(
+        `${selected.modelMissing.join(', ')} ${
+          selected.modelMissing.length === 1 ? 'is' : 'are'
+        } missing in the current model summary files`
+      );
+    }
     coverageNode.textContent = notes.length ? `${notes.join('; ')}.` : 'No studies match the active filters.';
     host.innerHTML = '<p class="chart-fallback">No meta-analysis rows available for the current filters.</p>';
     return;
@@ -1037,7 +1062,11 @@ function renderMetaForest() {
     coverageNotes.push(`${selected.missingInMeta.length} selected studies are missing from the arm-level meta table`);
   }
   if (selected.modelMissing.length > 0) {
-    coverageNotes.push(`${selected.modelMissing.length} selected studies are missing posterior summaries`);
+    coverageNotes.push(
+      `${selected.modelMissing.join(', ')} ${
+        selected.modelMissing.length === 1 ? 'is' : 'are'
+      } selected but absent from current posterior summary CSVs`
+    );
   }
   coverageNode.textContent = coverageNotes.length ? `${coverageNotes.join('; ')}.` : 'Showing all selected studies with posterior shrinkage and observed OR.';
 
@@ -1163,7 +1192,7 @@ function renderMetaForest() {
 
   const footnote = document.createElement('div');
   footnote.className = 'meta-cell meta-footnote-row meta-inspiration';
-  footnote.innerHTML = 'Inspired by the <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">bayesfoRest package</a>';
+  footnote.innerHTML = 'Data visualization inspired by the <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">bayesfoRest package</a>';
   grid.appendChild(footnote);
 
   host.appendChild(grid);
