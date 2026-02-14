@@ -22,6 +22,7 @@ suppressPackageStartupMessages({
   library(ggdist)
   library(metafor)
   library(patchwork)
+  library(bayesmeta)
 })
 
 
@@ -160,16 +161,24 @@ if (any(model_df$events > model_df$total)) {
 # ------------------------------------------------------------
 
 model_formula <- brms::bf(
-  events | trials(total) ~ factor(study) + factor(treat) + (treat12 - 1 | study)
+  events | trials(total) ~ 0 + study + treat + (treat12 - 1 | study)
 )
+
+ default_prior(model_formula, data = model_df, family = binomial)
+
+informative_tau_prior_OR =
+  TurnerEtAlPrior(outcome = "cause-specific mortality / major morbidity event / composite (mortality or morbidity)",
+                  comparator1 = "pharmacological",
+                  comparator2 = "placebo / control")
+
+informative_prior_OR_mean = informative_tau_prior_OR$parameters["tau", "mu"]
+informative_prior_OR_sd = informative_tau_prior_OR$parameters["tau", "sigma"]
 
 model_priors <- c(
-  brms::prior(normal(0, 2.5), class = "b"),
-  brms::prior(normal(0, 2.5), class = "Intercept"),
-  brms::prior(exponential(1), class = "sd", group = "study", coef = "treat12")
+  brms::prior(normal(0, 1.5), class = "b"),
+  brms::prior(normal(0, 0.82), class = "b", coef = "treat1"),
+  brms::prior(lognormal(-1.855, 0.87), class = "sd", group = "study", coef = "treat12")
 )
-
-set.seed(seed)
 
 model_fit <- brms::brm(
   formula = model_formula,
