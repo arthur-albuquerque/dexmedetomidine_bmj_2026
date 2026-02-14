@@ -57,6 +57,15 @@
         </div>
       </header>
 
+      <nav class="top-tabs" aria-label="App views">
+        <button id="tab-overview" class="top-tab is-active" type="button" data-tab="overview">
+          Studies Overview
+        </button>
+        <button id="tab-analysis" class="top-tab" type="button" data-tab="analysis">
+          Statistical Analysis
+        </button>
+      </nav>
+
       <section class="panel intro-panel" aria-label="Interpretation guidance">
         <h2>How to Read This Page</h2>
         <p>
@@ -193,6 +202,19 @@
         </div>
       </section>
 
+      <section
+        class="panel meta-analysis-panel tab-analysis-only"
+        id="meta-analysis-panel"
+        aria-label="Statistical analysis"
+      >
+        <h2>Bayesian Meta-analysis (Model 4)</h2>
+        <p class="meta-note">
+          Uses a single pre-fitted Bayesian model. Filters control which study rows are shown; the pooled effect stays fixed from the full model fit.
+        </p>
+        <div id="meta-coverage-note" class="meta-coverage-note" role="status" aria-live="polite"></div>
+        <div id="meta-forest" class="meta-forest-wrap"></div>
+      </section>
+
       <footer class="app-footer" aria-label="App attribution">
         <p>This app was built by Arthur M. Albuquerque, MD, using GPT-5.3-Codex.</p>
         <p class="source-line">
@@ -215,6 +237,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260213-10"></script>
+    <script type="module" src="./app.js?v=20260214-11"></script>
   </body>
 </html>

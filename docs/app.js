@@ -32,12 +32,16 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260213-10';
+const DATA_VERSION = '20260214-11';
+const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
+const DEFAULT_META_X_LIMITS = [0.1, 3.5];
+const DEFAULT_META_X_TICKS = [0.1, 0.3, 1, 3];
 
 const state = {
   trials: [],
   filtered: [],
   tableFiltered: [],
+  activeTab: 'overview',
   filters: {
     rob: [],
     timing: [],
@@ -52,6 +56,22 @@ const state = {
     infusion: [],
     timing: [],
     route: []
+  },
+  meta: {
+    loaded: false,
+    rows: [],
+    rowsByTrialId: new Map(),
+    overall: null,
+    gridOr: [],
+    xLimitsOr: DEFAULT_META_X_LIMITS,
+    xTicksOr: DEFAULT_META_X_TICKS,
+    allCounts: {
+      dex_events: 0,
+      dex_total: 0,
+      control_events: 0,
+      control_total: 0
+    },
+    coverage: null
   }
 };
 
@@ -65,6 +85,10 @@ function routeLabel(value) {
 
 function doseBandLabel(value) {
   return DOSE_BAND_LABELS[value] || value;
+}
+
+function canonicalTrialId(value) {
+  return String(value || '').trim().replace(TRIAL_SUFFIX_PATTERN, '');
 }
 
 function isFilterActive(values) {
@@ -499,6 +523,652 @@ function renderTable() {
   });
 }
 
+function parsePositiveNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function parseMetaBundle(rawBundle) {
+  if (!rawBundle || !Array.isArray(rawBundle.rows)) return null;
+
+  const gridOrRaw = Array.isArray(rawBundle.grid_or) ? rawBundle.grid_or : [];
+  const gridOr = gridOrRaw
+    .map((value) => Number(value))
+    .filter((value) => Number.isFinite(value) && value > 0);
+  if (gridOr.length < 10) return null;
+
+  const xLimits = Array.isArray(rawBundle.x_limits_or) && rawBundle.x_limits_or.length === 2
+    ? rawBundle.x_limits_or.map((value) => Number(value))
+    : DEFAULT_META_X_LIMITS;
+  const xTicks = Array.isArray(rawBundle.x_ticks_or) && rawBundle.x_ticks_or.length > 1
+    ? rawBundle.x_ticks_or.map((value) => Number(value)).filter((value) => Number.isFinite(value) && value > 0)
+    : DEFAULT_META_X_TICKS;
+
+  const rows = rawBundle.rows
+    .map((row) => {
+      const trialIdCanonical = canonicalTrialId(row.trial_id_canonical || row.trial_id);
+      const dexArmIndex = Number(row.dex_arm_index);
+      if (!trialIdCanonical || !Number.isFinite(dexArmIndex)) return null;
+
+      const densityNormRaw = Array.isArray(row.density_norm) ? row.density_norm : [];
+      const densityNorm = gridOr.map((_, index) => {
+        const value = Number(densityNormRaw[index]);
+        return Number.isFinite(value) && value >= 0 ? value : 0;
+      });
+
+      return {
+        comparisonId: String(row.comparison_id || `${trialIdCanonical}__arm${dexArmIndex}`),
+        trialIdCanonical,
+        studyLabel: String(row.study_label || trialIdCanonical.replaceAll('_', ' ')),
+        dexArmIndex,
+        dexArmLabel: String(row.dex_arm_label || '').trim(),
+        dexEvents: Number(row.dex_events || 0),
+        dexTotal: Number(row.dex_total || 0),
+        controlEvents: Number(row.control_events || 0),
+        controlTotal: Number(row.control_total || 0),
+        hasModel: Boolean(row.has_model),
+        shrinkageOr: parsePositiveNumber(row.shrinkage_or),
+        shrinkageOrLow: parsePositiveNumber(row.shrinkage_or_low),
+        shrinkageOrHigh: parsePositiveNumber(row.shrinkage_or_high),
+        crudeOr: parsePositiveNumber(row.crude_or),
+        crudeOrLow: parsePositiveNumber(row.crude_or_low),
+        crudeOrHigh: parsePositiveNumber(row.crude_or_high),
+        densityNorm
+      };
+    })
+    .filter(Boolean);
+
+  const rowsByTrialId = new Map();
+  rows.forEach((row) => {
+    if (!rowsByTrialId.has(row.trialIdCanonical)) {
+      rowsByTrialId.set(row.trialIdCanonical, []);
+    }
+    rowsByTrialId.get(row.trialIdCanonical).push(row);
+  });
+  rowsByTrialId.forEach((studyRows) => {
+    studyRows.sort((a, b) => a.dexArmIndex - b.dexArmIndex);
+  });
+
+  const overall = rawBundle.overall
+    ? {
+        medianOr: parsePositiveNumber(rawBundle.overall.median_or),
+        lowerOr: parsePositiveNumber(rawBundle.overall.lower_or),
+        upperOr: parsePositiveNumber(rawBundle.overall.upper_or),
+        densityNorm: gridOr.map((_, index) => {
+          const raw =
+            Array.isArray(rawBundle.overall.density_norm) && index < rawBundle.overall.density_norm.length
+              ? Number(rawBundle.overall.density_norm[index])
+              : 0;
+          return Number.isFinite(raw) && raw >= 0 ? raw : 0;
+        })
+      }
+    : null;
+
+  const allCounts = rawBundle.all_counts || {};
+  return {
+    loaded: true,
+    rows,
+    rowsByTrialId,
+    overall,
+    gridOr,
+    xLimitsOr:
+      xLimits.length === 2 && xLimits[0] > 0 && xLimits[1] > xLimits[0]
+        ? xLimits
+        : DEFAULT_META_X_LIMITS,
+    xTicksOr: xTicks.length > 1 ? xTicks : DEFAULT_META_X_TICKS,
+    allCounts: {
+      dex_events: Number(allCounts.dex_events || 0),
+      dex_total: Number(allCounts.dex_total || 0),
+      control_events: Number(allCounts.control_events || 0),
+      control_total: Number(allCounts.control_total || 0)
+    },
+    coverage: rawBundle.coverage || null
+  };
+}
+
+function ensureMetaBundleShape() {
+  if (state.meta && state.meta.loaded) return;
+  state.meta = {
+    loaded: false,
+    rows: [],
+    rowsByTrialId: new Map(),
+    overall: null,
+    gridOr: [],
+    xLimitsOr: DEFAULT_META_X_LIMITS,
+    xTicksOr: DEFAULT_META_X_TICKS,
+    allCounts: {
+      dex_events: 0,
+      dex_total: 0,
+      control_events: 0,
+      control_total: 0
+    },
+    coverage: null
+  };
+}
+
+function formatArmSuffix(dexArmLabel, dexArmIndex) {
+  const raw = String(dexArmLabel || '').trim();
+  if (!raw) return `arm ${dexArmIndex}`;
+
+  let cleaned = raw.replace(/^dexmedetomidine\s*/i, '').trim();
+  if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
+  if (!cleaned) return `arm ${dexArmIndex}`;
+  return cleaned;
+}
+
+function metaFormatNumber(value) {
+  return Number(value).toFixed(2);
+}
+
+function formatOrInterval(median, lower, upper) {
+  if (![median, lower, upper].every((value) => Number.isFinite(value))) return 'Not available';
+  return `${metaFormatNumber(median)} [${metaFormatNumber(lower)}, ${metaFormatNumber(upper)}]`;
+}
+
+function formatCounts(events, total) {
+  return `${Number(events)}/${Number(total)}`;
+}
+
+function createSvgNode(tagName, attrs = {}) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+  Object.entries(attrs).forEach(([name, value]) => {
+    node.setAttribute(name, String(value));
+  });
+  return node;
+}
+
+function makeDensityPoints({
+  gridOr,
+  densityNorm,
+  xMin,
+  xMax,
+  scaleX,
+  baselineY,
+  amplitude
+}) {
+  const points = [];
+  const n = Math.min(gridOr.length, densityNorm.length);
+  for (let i = 0; i < n; i += 1) {
+    const xValue = Number(gridOr[i]);
+    const dValue = Number(densityNorm[i]);
+    if (!Number.isFinite(xValue) || !Number.isFinite(dValue)) continue;
+    if (xValue < xMin || xValue > xMax) continue;
+    const yValue = baselineY - Math.max(0, Math.min(1, dValue)) * amplitude;
+    points.push({ x: scaleX(xValue), y: yValue });
+  }
+  return points;
+}
+
+function pointsToPath(points) {
+  if (!points.length) return '';
+  return points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
+    .join(' ');
+}
+
+function getMetaPalette() {
+  const isDark = document.body.classList.contains('theme-dark');
+  return {
+    grid: isDark ? '#2d4459' : '#d5d5d5',
+    vlineMain: isDark ? '#f4f8ff' : '#111111',
+    vlineOverall: isDark ? '#b5bfcb' : '#6d6d6d',
+    shrinkage: '#9f33ff',
+    pooledFill: isDark ? '#2f6dff' : '#1f53ff',
+    pooledStroke: isDark ? '#8db0ff' : '#1543d4',
+    observedStroke: isDark ? '#f1f6ff' : '#111111',
+    observedFill: isDark ? '#0f1f30' : '#ffffff',
+    axisText: isDark ? '#d8e7f5' : '#1d3f5e'
+  };
+}
+
+function buildMetaRowPlotSvg(rowConfig) {
+  const {
+    gridOr,
+    xLimitsOr,
+    overall,
+    row,
+    isPooled
+  } = rowConfig;
+
+  const palette = getMetaPalette();
+  const width = 340;
+  const height = isPooled ? 34 : 28;
+  const padLeft = 14;
+  const padRight = 14;
+  const baselineY = isPooled ? 24 : 20;
+  const amplitude = isPooled ? 14.5 : 8.6;
+  const [xMin, xMax] = xLimitsOr;
+  const logMin = Math.log(xMin);
+  const logMax = Math.log(xMax);
+  const plotWidth = width - padLeft - padRight;
+  const scaleX = (orValue) => {
+    const ratio = (Math.log(orValue) - logMin) / (logMax - logMin);
+    return padLeft + Math.max(0, Math.min(1, ratio)) * plotWidth;
+  };
+
+  const svg = createSvgNode('svg', {
+    class: 'meta-plot-svg',
+    viewBox: `0 0 ${width} ${height}`,
+    role: 'img',
+    'aria-hidden': 'true'
+  });
+
+  const baseline = createSvgNode('line', {
+    x1: padLeft,
+    y1: baselineY,
+    x2: width - padRight,
+    y2: baselineY,
+    stroke: palette.grid,
+    'stroke-width': 1
+  });
+  svg.appendChild(baseline);
+
+  const oneLine = createSvgNode('line', {
+    x1: scaleX(1),
+    y1: 2,
+    x2: scaleX(1),
+    y2: height - 2,
+    stroke: palette.vlineMain,
+    'stroke-width': 1.5
+  });
+  svg.appendChild(oneLine);
+
+  if (overall && Number.isFinite(overall.medianOr)) {
+    const overallLine = createSvgNode('line', {
+      x1: scaleX(overall.medianOr),
+      y1: 2,
+      x2: scaleX(overall.medianOr),
+      y2: height - 2,
+      stroke: palette.vlineOverall,
+      'stroke-width': 1.2
+    });
+    svg.appendChild(overallLine);
+  }
+  if (overall && Number.isFinite(overall.lowerOr)) {
+    const lowerLine = createSvgNode('line', {
+      x1: scaleX(overall.lowerOr),
+      y1: 2,
+      x2: scaleX(overall.lowerOr),
+      y2: height - 2,
+      stroke: palette.vlineOverall,
+      'stroke-width': 1,
+      'stroke-dasharray': '4 4'
+    });
+    svg.appendChild(lowerLine);
+  }
+  if (overall && Number.isFinite(overall.upperOr)) {
+    const upperLine = createSvgNode('line', {
+      x1: scaleX(overall.upperOr),
+      y1: 2,
+      x2: scaleX(overall.upperOr),
+      y2: height - 2,
+      stroke: palette.vlineOverall,
+      'stroke-width': 1,
+      'stroke-dasharray': '4 4'
+    });
+    svg.appendChild(upperLine);
+  }
+
+  const densityPoints = makeDensityPoints({
+    gridOr,
+    densityNorm: row.densityNorm || [],
+    xMin,
+    xMax,
+    scaleX,
+    baselineY,
+    amplitude
+  });
+
+  if (densityPoints.length > 1) {
+    if (isPooled) {
+      const areaPath = [
+        `M ${densityPoints[0].x.toFixed(2)} ${baselineY.toFixed(2)}`,
+        ...densityPoints.map((point) => `L ${point.x.toFixed(2)} ${point.y.toFixed(2)}`),
+        `L ${densityPoints[densityPoints.length - 1].x.toFixed(2)} ${baselineY.toFixed(2)}`,
+        'Z'
+      ].join(' ');
+      svg.appendChild(
+        createSvgNode('path', {
+          d: areaPath,
+          fill: palette.pooledFill,
+          opacity: 0.9
+        })
+      );
+      svg.appendChild(
+        createSvgNode('path', {
+          d: pointsToPath(densityPoints),
+          fill: 'none',
+          stroke: palette.pooledStroke,
+          'stroke-width': 1.6
+        })
+      );
+    } else {
+      svg.appendChild(
+        createSvgNode('path', {
+          d: pointsToPath(densityPoints),
+          fill: 'none',
+          stroke: palette.shrinkage,
+          'stroke-width': 1.8,
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round'
+        })
+      );
+    }
+  }
+
+  if (!isPooled && Number.isFinite(row.crudeOr) && row.crudeOr > 0) {
+    svg.appendChild(
+      createSvgNode('circle', {
+        cx: scaleX(row.crudeOr),
+        cy: baselineY - 7,
+        r: 5.8,
+        fill: palette.observedFill,
+        stroke: palette.observedStroke,
+        'stroke-width': 1.2
+      })
+    );
+  }
+
+  return svg;
+}
+
+function buildMetaAxisSvg({ xLimitsOr, xTicksOr }) {
+  const palette = getMetaPalette();
+  const width = 340;
+  const height = 44;
+  const padLeft = 14;
+  const padRight = 14;
+  const axisY = 10;
+  const [xMin, xMax] = xLimitsOr;
+  const logMin = Math.log(xMin);
+  const logMax = Math.log(xMax);
+  const plotWidth = width - padLeft - padRight;
+  const scaleX = (orValue) => {
+    const ratio = (Math.log(orValue) - logMin) / (logMax - logMin);
+    return padLeft + Math.max(0, Math.min(1, ratio)) * plotWidth;
+  };
+
+  const svg = createSvgNode('svg', {
+    class: 'meta-axis-svg',
+    viewBox: `0 0 ${width} ${height}`,
+    role: 'img',
+    'aria-hidden': 'true'
+  });
+
+  svg.appendChild(
+    createSvgNode('line', {
+      x1: padLeft,
+      y1: axisY,
+      x2: width - padRight,
+      y2: axisY,
+      stroke: palette.vlineMain,
+      'stroke-width': 1.7
+    })
+  );
+
+  xTicksOr.forEach((tick) => {
+    if (!Number.isFinite(tick) || tick <= 0 || tick < xMin || tick > xMax) return;
+    const x = scaleX(tick);
+    svg.appendChild(
+      createSvgNode('line', {
+        x1: x,
+        y1: axisY,
+        x2: x,
+        y2: axisY + 5,
+        stroke: palette.vlineMain,
+        'stroke-width': 1.2
+      })
+    );
+    const label = createSvgNode('text', {
+      x,
+      y: axisY + 16,
+      fill: palette.axisText,
+      'font-size': '11',
+      'text-anchor': 'middle',
+      'font-family': 'IBM Plex Sans, sans-serif'
+    });
+    label.textContent = tick === 1 ? '1.0' : String(tick);
+    svg.appendChild(label);
+  });
+
+  const axisTitle = createSvgNode('text', {
+    x: width / 2,
+    y: height - 4,
+    fill: palette.axisText,
+    'font-size': '11',
+    'text-anchor': 'middle',
+    'font-family': 'IBM Plex Sans, sans-serif'
+  });
+  axisTitle.textContent = 'Odds Ratio (log scale)';
+  svg.appendChild(axisTitle);
+
+  return svg;
+}
+
+function makeMetaCell(text, classNames = []) {
+  const cell = document.createElement('div');
+  cell.className = ['meta-cell', ...classNames].join(' ').trim();
+  cell.textContent = text;
+  return cell;
+}
+
+function makeMetaPlotCell(svgNode, classNames = []) {
+  const cell = document.createElement('div');
+  cell.className = ['meta-plot-cell', ...classNames].join(' ').trim();
+  if (svgNode) cell.appendChild(svgNode);
+  return cell;
+}
+
+function selectMetaRowsForCurrentFilter() {
+  const selectedStudyLabels = new Map();
+  state.tableFiltered.forEach((trialRow) => {
+    const trialId = canonicalTrialId(trialRow.trial_id);
+    if (!trialId || selectedStudyLabels.has(trialId)) return;
+    selectedStudyLabels.set(trialId, trialRow.study_label || trialId.replaceAll('_', ' '));
+  });
+
+  const filteredRows = [];
+  const missingInMeta = [];
+  const modelMissing = new Set();
+
+  [...selectedStudyLabels.entries()].forEach(([trialId, appStudyLabel]) => {
+    const candidates = state.meta.rowsByTrialId.get(trialId) || [];
+    if (candidates.length === 0) {
+      missingInMeta.push(appStudyLabel);
+      return;
+    }
+
+    const candidatesWithModel = candidates.filter((row) => row.hasModel);
+    if (candidatesWithModel.length === 0) {
+      modelMissing.add(appStudyLabel);
+      return;
+    }
+
+    if (candidates.length > candidatesWithModel.length) {
+      modelMissing.add(appStudyLabel);
+    }
+
+    const hasMultipleArms = candidatesWithModel.length > 1;
+    candidatesWithModel.forEach((row) => {
+      const displayLabel = hasMultipleArms
+        ? `${appStudyLabel} (${formatArmSuffix(row.dexArmLabel, row.dexArmIndex)})`
+        : appStudyLabel;
+      filteredRows.push({
+        ...row,
+        displayLabel
+      });
+    });
+  });
+
+  filteredRows.sort((a, b) => a.displayLabel.localeCompare(b.displayLabel));
+  return {
+    rows: filteredRows,
+    missingInMeta,
+    modelMissing: [...modelMissing].sort((a, b) => a.localeCompare(b))
+  };
+}
+
+function renderMetaForest() {
+  const host = document.getElementById('meta-forest');
+  const coverageNode = document.getElementById('meta-coverage-note');
+  if (!host || !coverageNode) return;
+  host.innerHTML = '';
+
+  if (!state.meta.loaded) {
+    coverageNode.textContent = 'Meta-analysis bundle not loaded.';
+    host.innerHTML = '<p class="chart-fallback">Meta-analysis data unavailable for this build.</p>';
+    return;
+  }
+
+  const selected = selectMetaRowsForCurrentFilter();
+  if (selected.rows.length === 0) {
+    const notes = [];
+    if (selected.missingInMeta.length > 0) notes.push(`${selected.missingInMeta.length} study labels are not mapped to the meta-analysis table`);
+    if (selected.modelMissing.length > 0) notes.push(`${selected.modelMissing.length} studies do not have model summaries yet`);
+    coverageNode.textContent = notes.length ? `${notes.join('; ')}.` : 'No studies match the active filters.';
+    host.innerHTML = '<p class="chart-fallback">No meta-analysis rows available for the current filters.</p>';
+    return;
+  }
+
+  const coverageNotes = [];
+  if (selected.missingInMeta.length > 0) {
+    coverageNotes.push(`${selected.missingInMeta.length} selected studies are missing from the arm-level meta table`);
+  }
+  if (selected.modelMissing.length > 0) {
+    coverageNotes.push(`${selected.modelMissing.length} selected studies are missing posterior summaries`);
+  }
+  coverageNode.textContent = coverageNotes.length ? `${coverageNotes.join('; ')}.` : 'Showing all selected studies with posterior shrinkage and observed OR.';
+
+  const filteredCounts = selected.rows.reduce(
+    (acc, row) => {
+      acc.dex_events += row.dexEvents;
+      acc.dex_total += row.dexTotal;
+      acc.control_events += row.controlEvents;
+      acc.control_total += row.controlTotal;
+      return acc;
+    },
+    { dex_events: 0, dex_total: 0, control_events: 0, control_total: 0 }
+  );
+
+  const overall = state.meta.overall || {};
+  const pooledRow = {
+    displayLabel: 'Pooled Effect',
+    dexEvents: filteredCounts.dex_events,
+    dexTotal: filteredCounts.dex_total,
+    controlEvents: filteredCounts.control_events,
+    controlTotal: filteredCounts.control_total,
+    shrinkageOr: overall.medianOr,
+    shrinkageOrLow: overall.lowerOr,
+    shrinkageOrHigh: overall.upperOr,
+    crudeOr: null,
+    crudeOrLow: null,
+    crudeOrHigh: null,
+    densityNorm: Array.isArray(overall.densityNorm) ? overall.densityNorm : []
+  };
+
+  const grid = document.createElement('div');
+  grid.className = 'meta-forest-grid';
+
+  grid.appendChild(makeMetaCell('Study', ['meta-cell-head']));
+  grid.appendChild(makeMetaCell('Treatment\n(Events/Total)', ['meta-cell-head']));
+  grid.appendChild(makeMetaCell('Control\n(Events/Total)', ['meta-cell-head']));
+
+  const plotHead = document.createElement('div');
+  plotHead.className = 'meta-cell meta-cell-head meta-plot-head';
+  plotHead.innerHTML = `
+    <div class="meta-favours">
+      <span>Favours<br>Dexmedetomidine</span>
+      <span>Favours<br>Control</span>
+    </div>
+  `;
+  grid.appendChild(plotHead);
+
+  grid.appendChild(makeMetaCell('Shrinkage OR\n[95% CrI]', ['meta-cell-head']));
+  grid.appendChild(makeMetaCell('Observed OR\n[95% CI]', ['meta-cell-head']));
+
+  selected.rows.forEach((row) => {
+    grid.appendChild(makeMetaCell(row.displayLabel, ['meta-study-col']));
+    grid.appendChild(makeMetaCell(formatCounts(row.dexEvents, row.dexTotal), ['meta-count-col']));
+    grid.appendChild(makeMetaCell(formatCounts(row.controlEvents, row.controlTotal), ['meta-count-col']));
+    grid.appendChild(
+      makeMetaPlotCell(
+        buildMetaRowPlotSvg({
+          row,
+          isPooled: false,
+          gridOr: state.meta.gridOr,
+          xLimitsOr: state.meta.xLimitsOr,
+          overall: state.meta.overall
+        })
+      )
+    );
+    grid.appendChild(makeMetaCell(formatOrInterval(row.shrinkageOr, row.shrinkageOrLow, row.shrinkageOrHigh)));
+    grid.appendChild(makeMetaCell(formatOrInterval(row.crudeOr, row.crudeOrLow, row.crudeOrHigh)));
+  });
+
+  const pooledCountLabelTreatment = `${formatCounts(pooledRow.dexEvents, pooledRow.dexTotal)}  (all: ${formatCounts(
+    state.meta.allCounts.dex_events,
+    state.meta.allCounts.dex_total
+  )})`;
+  const pooledCountLabelControl = `${formatCounts(pooledRow.controlEvents, pooledRow.controlTotal)}  (all: ${formatCounts(
+    state.meta.allCounts.control_events,
+    state.meta.allCounts.control_total
+  )})`;
+
+  grid.appendChild(makeMetaCell(pooledRow.displayLabel, ['meta-study-col', 'meta-row-pooled']));
+  grid.appendChild(makeMetaCell(pooledCountLabelTreatment, ['meta-count-col', 'meta-row-pooled']));
+  grid.appendChild(makeMetaCell(pooledCountLabelControl, ['meta-count-col', 'meta-row-pooled']));
+  grid.appendChild(
+    makeMetaPlotCell(
+      buildMetaRowPlotSvg({
+        row: pooledRow,
+        isPooled: true,
+        gridOr: state.meta.gridOr,
+        xLimitsOr: state.meta.xLimitsOr,
+        overall: state.meta.overall
+      }),
+      ['meta-row-pooled']
+    )
+  );
+  grid.appendChild(
+    makeMetaCell(
+      formatOrInterval(pooledRow.shrinkageOr, pooledRow.shrinkageOrLow, pooledRow.shrinkageOrHigh),
+      ['meta-row-pooled']
+    )
+  );
+  grid.appendChild(makeMetaCell('\u00A0', ['meta-row-pooled']));
+
+  grid.appendChild(makeMetaCell('', ['meta-axis-spacer']));
+  grid.appendChild(makeMetaCell('', ['meta-axis-spacer']));
+  grid.appendChild(makeMetaCell('', ['meta-axis-spacer']));
+
+  const axisCell = document.createElement('div');
+  axisCell.className = 'meta-cell meta-axis-cell';
+  axisCell.appendChild(
+    buildMetaAxisSvg({
+      xLimitsOr: state.meta.xLimitsOr,
+      xTicksOr: state.meta.xTicksOr
+    })
+  );
+  grid.appendChild(axisCell);
+  grid.appendChild(makeMetaCell('', ['meta-axis-spacer']));
+  grid.appendChild(makeMetaCell('', ['meta-axis-spacer']));
+
+  grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
+  grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
+  grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
+  grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
+  grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
+
+  const footnote = document.createElement('div');
+  footnote.className = 'meta-cell meta-footnote-row meta-inspiration';
+  footnote.innerHTML = 'Inspired by the <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">bayesfoRest package</a>';
+  grid.appendChild(footnote);
+
+  host.appendChild(grid);
+}
+
 function rerender() {
   applyFilters();
   applyTableFilters();
@@ -524,6 +1194,11 @@ function rerender() {
   } catch (error) {
     console.error('renderTable failed', error);
   }
+  try {
+    renderMetaForest();
+  } catch (error) {
+    console.error('renderMetaForest failed', error);
+  }
 }
 
 function setTheme(theme) {
@@ -547,10 +1222,65 @@ function initializeTheme() {
   setTheme(prefersDark ? 'dark' : 'light');
 }
 
+function setActiveTab(tab) {
+  state.activeTab = tab === 'analysis' ? 'analysis' : 'overview';
+  document.body.setAttribute('data-active-tab', state.activeTab);
+  const overviewTab = document.getElementById('tab-overview');
+  const analysisTab = document.getElementById('tab-analysis');
+  if (overviewTab) {
+    overviewTab.classList.toggle('is-active', state.activeTab === 'overview');
+    overviewTab.setAttribute('aria-pressed', state.activeTab === 'overview' ? 'true' : 'false');
+  }
+  if (analysisTab) {
+    analysisTab.classList.toggle('is-active', state.activeTab === 'analysis');
+    analysisTab.setAttribute('aria-pressed', state.activeTab === 'analysis' ? 'true' : 'false');
+  }
+}
+
+function setupTabs() {
+  const overviewTab = document.getElementById('tab-overview');
+  const analysisTab = document.getElementById('tab-analysis');
+  if (overviewTab) {
+    overviewTab.addEventListener('click', () => {
+      setActiveTab('overview');
+      rerender();
+    });
+  }
+  if (analysisTab) {
+    analysisTab.addEventListener('click', () => {
+      setActiveTab('analysis');
+      rerender();
+    });
+  }
+  setActiveTab('overview');
+}
+
+async function fetchOptionalJson(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.warn(`Optional fetch failed for ${url}`, error);
+    return null;
+  }
+}
+
 async function init() {
-  const trialsRaw = await fetch(`./data/trials_curated.json?v=${DATA_VERSION}`).then((response) =>
-    response.json()
-  );
+  setupTabs();
+
+  const [trialsRaw, metaBundleRaw] = await Promise.all([
+    fetch(`./data/trials_curated.json?v=${DATA_VERSION}`).then((response) => response.json()),
+    fetchOptionalJson(`./data/meta_analysis_bundle.json?v=${DATA_VERSION}`)
+  ]);
+
+  const parsedMeta = parseMetaBundle(metaBundleRaw);
+  if (parsedMeta) {
+    state.meta = parsedMeta;
+  } else {
+    ensureMetaBundleShape();
+  }
+
   state.trials = trialsRaw.map((row) => normalizeTrial(row));
 
   const robValues = [...new Set(state.trials.map((row) => row.rob_overall_std))].sort((a, b) => a.localeCompare(b));

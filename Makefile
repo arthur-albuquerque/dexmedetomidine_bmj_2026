@@ -1,6 +1,6 @@
 PYTHON := .venv/bin/python
 
-.PHONY: extract validate summarize checksums sync-data test all clean
+.PHONY: extract validate summarize checksums sync-data extract-delirium meta-bundle test all clean
 
 extract:
 	$(PYTHON) scripts/extract_data.py
@@ -16,6 +16,12 @@ checksums:
 
 sync-data:
 	$(PYTHON) scripts/sync_app_data.py
+
+extract-delirium:
+	$(PYTHON) scripts/extract_delirium_prevalence.py
+
+meta-bundle:
+	$(PYTHON) scripts/build_meta_analysis_bundle.py
 
 # Unit tests are stdlib unittest to avoid hidden dependency drift.
 test:

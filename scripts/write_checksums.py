@@ -34,6 +34,7 @@ def main() -> None:
         "summary_by_rob.json",
         "review_queue.csv",
         "validation_report.json",
+        "meta_analysis_bundle.json",
     ]
 
     hashes = {}
