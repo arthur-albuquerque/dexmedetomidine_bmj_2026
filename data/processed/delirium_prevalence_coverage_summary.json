@@ -1,0 +1,11 @@
+{
+  "n_trials_curated": 43,
+  "n_extracted_trials": 43,
+  "n_extracted_rows": 45,
+  "n_missing_in_csv": 0,
+  "n_control_mismatch": 0,
+  "n_ambiguous_unresolved": 0,
+  "n_inconsistent_csv_rows": 0,
+  "n_manually_excluded": 0,
+  "n_multi_dex_trials": 2
+}

@@ -1,0 +1,46 @@
+trial_id,study_label,study_key,studyID_csv,dex_arm_index,dex_arm_label,dex_events,dex_total,control_label,control_events,control_total,mapping_method,qc_flags
+abd_ellatif_2024,Abd Ellatif 2024,abd_ellatif_2024,Abd Ellatif_dexmedetomidine_2024,1,Dexmedetomidine,1,40,Placebo,7,40,exact_key,
+chen_2021,Chen 2021,chen_2021,Chen_dexmedetomidine_2021,1,Dexmedetomidine,7,80,Placebo,14,80,exact_key,
+choovongkom_ol_2024,Choovongkom ol 2024,choovongkom_ol_2024,Choovongkomol_dexmedetomidine_2024,1,Dexmedetomidine,18,100,Placebo,40,100,alias_key,used_study_key_alias
+deiner_2017,Deiner 2017,deiner_2017,Deiner_dexmedetomidine_2017,1,Dexmedetomidine,23,189,Placebo,23,201,exact_key,
+gao_2021,Gao 2021,gao_2021,Gao_dexmedetomidine_2021,1,Dexmedetomidine,3,20,Placebo,10,20,exact_key,
+ghazaly_2023,Ghazaly 2023,ghazaly_2023,manual_ghazaly_2023,1,Dexmedetomidine (bolus),1,20,Placebo,15,20,manual_override,manual_counts_override
+guo_2015,Guo 2015,guo_2015,Guo_dexmedetomidine_2015,1,Dexmedetomidine,6,78,Placebo,21,78,exact_key,
+he_2021,He 2021,he_2021,He_dexmedetomidine_2021,1,Dexmedetomidine,2,30,Placebo,3,30,exact_key,
+he_2023,He 2023,he_2023,He_dexmedetomidine_2023,1,Dexmedetomidine,3,30,Placebo,13,30,exact_key,
+he_2024,He 2024,he_2024,He_alprazolam_2024,2,Dexmedetomidine,5,40,Placebo,13,40,exact_key,
+hong_2021,Hong 2021,hong_2021,Hong_dexmedetomidine_2021,1,Dexmedetomidine,17,356,Placebo,26,356,exact_key,
+hu_2021,Hu 2021,hu_2021,Hu_dexmedetomidine_2021,1,Dexmedetomidine,15,90,Placebo,32,87,exact_key,
+hu_2022,Hu 2022,hu_2022,Hu_dexmedetomidine_2022,1,Dexmedetomidine,1,20,Placebo,3,20,exact_key,
+huet_2024,Huet 2024,huet_2024,Huet_dexmedetomidine_2024,1,Dexmedetomidine,20,166,Placebo,20,167,exact_key,
+kim_2019,Kim 2019,kim_2019,Kim_dexmedetomidine_2019,1,Dexmedetomidine,15,73,Placebo,15,70,exact_key,
+lai_2023,Lai 2023,lai_2023,Lai_dexmedetomidine_2023,1,Dexmedetomidine,5,30,Placebo,4,30,exact_key,
+lee_2018,Lee 2018,lee_2018,manual_lee_2018,1,Dexmedetomidine (bolus),21,114,Saline,27,109,manual_override,manual_counts_override;multi_dex_trial
+lee_2018,Lee 2018,lee_2018,manual_lee_2018,2,Dexmedetomidine (bolus + infusion),9,95,Saline,27,109,manual_override,manual_counts_override;multi_dex_trial
+lee_2020,Lee 2020,lee_2020,Lee_dexmedetomidine_2020,1,Dexmedetomidine,9,107,Placebo,6,108,exact_key,
+li_2017,Li 2017,li_2017,Li_dexmedetomidine_2017,1,Dexmedetomidine,7,142,Placebo,11,143,exact_key,
+li_2020,Li 2020,li_2020,Li_dexmedetomidine_2020,1,Dexmedetomidine,17,309,Placebo,32,310,exact_key,
+li_2023,Li 2023,li_2023,Li_dexmedetomidine_2023,1,Dexmedetomidine,28,130,Placebo,60,130,ambiguity_rule,resolved_ambiguity_by_dexmedetomidine_name
+likhvantsev_2021,Likhvantsev 2021,likhvantsev_2021,Likhvantsev_dexmedetomidine_2021,1,Dexmedetomidine,6,87,Placebo,16,88,exact_key,
+liu_2016,Liu 2016,liu_2016,Liu_dexmedetomidine_2016a,1,Dexmedetomidine [manual pooled],15,99,Placebo (NS) [manual pooled],43,98,manual_override,manual_counts_override
+liu_2021,Liu 2021,liu_2021,Liu_dexmedetomidine_2021,1,Dexmedetomidine,5,60,Placebo,8,60,exact_key,
+liu_2023,Liu 2023,liu_2023,Liu_dexmedetomidine_2023,1,Dexmedetomidine,32,152,Placebo,36,152,exact_key,
+long_2024,Long 2024,long_2024,Long_dexmedetomidine_2024,1,Dexmedetomidine,3,39,Placebo,7,39,exact_key,
+lu_2021,Lu 2021,lu_2021,Lu_dexmedetomidine_2021,1,Dexmedetomidine,41,404,Placebo,43,404,exact_key,
+lv_2022,Lv 2022,lv_2022,Lv_dexmedetomidine_2022,1,Dexmedetomidine,21,163,Placebo,46,164,exact_key,
+ma_2013,Ma 2013,ma_2013,manual_ma_2013,1,Dexmedetomidine (bolus + infusion),2,30,Saline,3,30,manual_override,manual_counts_override
+massoumi_2019,Massoumi 2019,massoumi_2019,manual_massoumi_2019,1,Dexmedetomidine (bolus + infusion),4,44,Saline,9,44,manual_override,manual_counts_override
+qu_2023,Qu 2023,qu_2023,Qu_dexmedetomidine_2023,1,Dexmedetomidine,5,188,Placebo,16,206,exact_key,
+soh_2020,Soh 2020,soh_2020,Soh_dexmedetomidine_2020,1,Dexmedetomidine,2,54,Placebo,7,54,exact_key,
+su_2016,Su 2016,su_2016,Su_dexmedetomidine_2016,1,Dexmedetomidine,32,350,Placebo,79,350,exact_key,
+tang_2022,Tang 2022,tang_2022,Tang_dexmedetomidine_2022,1,"Dexmedetomidine (Dex1, 0.3 mcg/kg/h)",2,40,Placebo,9,40,exact_key,multi_dex_trial
+tang_2022,Tang 2022,tang_2022,Tang_dexmedetomidine_2022,2,"Dexmedetomidine (Dex2, 0.6 mcg/kg/h)",3,40,Placebo,9,40,exact_key,multi_dex_trial
+turan_2020,Turan 2020,turan_2020,Turan_dexmedetomidine_2020,1,Dexmedetomidine,67,398,Placebo,46,396,exact_key,
+van_norden_2021,van Norden 2021,van_norden_2021,van Norden_dexmedetomidine_2021,1,Dexmedetomidine,5,28,Placebo,14,32,exact_key,
+wang_2023,Wang 2023,wang_2023,Wang_dexmedetomidine_2023,1,Dexmedetomidine,47,326,Placebo,51,326,exact_key,
+wu_2023,Wu 2023,wu_2023,Wu_dexmedetomidine_2023,1,Dexmedetomidine,3,58,Placebo,7,57,exact_key,
+xin_2021,Xin 2021,xin_2021,Xin_dexmedetomidine_2021,1,Dexmedetomidine,3,30,Placebo,10,30,exact_key,
+xing_2021,Xing 2021,xing_2021,Xing_dexmedetomidine_2021,1,Dexmedetomidine,2,55,Placebo,8,55,exact_key,
+yang_2015,Yang 2015,yang_2015,Yang_dexmedetomidine_2015,1,Dexmedetomidine,2,40,Placebo,5,40,exact_key,
+zhang_2020,Zhang 2020,zhang_2020,Zhang_dexmedetomidine_2020,1,Dexmedetomidine,20,116,Placebo,36,116,exact_key,
+zhang_2023,Zhang 2023,zhang_2023,Zhang_dexmedetomidine_2023,1,Dexmedetomidine,2,58,Placebo,0,59,exact_key,
