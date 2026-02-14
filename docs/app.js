@@ -1183,13 +1183,12 @@ function renderMetaForest() {
   grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
   grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
   grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
-  grid.appendChild(makeMetaCell('', ['meta-footnote-row']));
 
   const footnote = document.createElement('div');
   footnote.className = 'meta-cell meta-footnote-row meta-inspiration';
   footnote.innerHTML = `
     <span class="meta-inspiration-block">
-      Data visualization inspired by the
+      <span class="meta-inspiration-line1">Data visualization inspired by the</span>
       <br />
       <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">bayesfoRest package</a>
     </span>

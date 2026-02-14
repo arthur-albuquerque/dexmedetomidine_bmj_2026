@@ -694,12 +694,17 @@ tbody tr:nth-child(even) {
   overflow: visible;
   text-overflow: clip;
   justify-content: flex-end;
+  grid-column: 5 / span 2;
 }
 
 .meta-inspiration-block {
   display: inline-block;
   text-align: left;
   line-height: 1.2;
+}
+
+.meta-inspiration-line1 {
+  white-space: nowrap;
 }
 
 .meta-inspiration a {
