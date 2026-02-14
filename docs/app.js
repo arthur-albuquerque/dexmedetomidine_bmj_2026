@@ -32,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260214-18';
+const DATA_VERSION = '20260214-19';
 const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
 const DEFAULT_META_X_LIMITS = [0.1, 3.5];
 const DEFAULT_META_X_TICKS = [0.1, 0.3, 0.7, 1, 3];
@@ -1286,7 +1286,7 @@ function setupTabs() {
 
 async function fetchOptionalJson(url) {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
@@ -1298,8 +1298,13 @@ async function fetchOptionalJson(url) {
 async function init() {
   setupTabs();
 
+  const trialsPromise = fetch(`./data/trials_curated.json?v=${DATA_VERSION}`, { cache: 'no-store' }).then((response) => {
+    if (!response.ok) throw new Error(`Failed to fetch trials_curated.json (${response.status})`);
+    return response.json();
+  });
+
   const [trialsRaw, metaBundleRaw] = await Promise.all([
-    fetch(`./data/trials_curated.json?v=${DATA_VERSION}`).then((response) => response.json()),
+    trialsPromise,
     fetchOptionalJson(`./data/meta_analysis_bundle.json?v=${DATA_VERSION}`)
   ]);
 
