@@ -145,10 +145,13 @@
       >
         <h2>Bayesian Meta-Analysis</h2>
         <p class="meta-note">
+          Dots depict the median Observed OR. Purple curves depict study-specific shrinkage marginal posterior distributions. Vertical lines show the pooled median and 95% CrI limits. Credible intervals (CrI) are reported as highest-density intervals.
+        </p>
+        <div id="meta-forest" class="meta-forest-wrap"></div>
+        <p class="meta-note">
           This panel reuses one Bayesian model fitted on the full eligible dataset. Filters update which trial rows are displayed in the forest plot, while the pooled effect remains the same full-dataset estimate.
         </p>
         <div id="meta-coverage-note" class="meta-coverage-note" role="status" aria-live="polite"></div>
-        <div id="meta-forest" class="meta-forest-wrap"></div>
         <details class="meta-explainer">
           <summary>Explanation about the Bayesian model</summary>
           <div class="meta-explainer-body">
@@ -162,8 +165,10 @@
             <p>Model structure:</p>
             <p class="meta-equation">
               \[
-              y_{ij}\sim \mathrm{Binomial}(n_{ij}, p_{ij}), \qquad
+              \begin{aligned}
+              y_{ij}\sim \mathrm{Binomial}(n_{ij}, p_{ij}), \\
               \mathrm{logit}(p_{ij})=\gamma_i + \theta\,t_{ij} + u_i\,z_{ij}
+              \end{aligned}
               \]
             </p>
             <p class="meta-equation">
@@ -172,7 +177,7 @@
               \log(\mathrm{OR}_i)=\theta + u_i
               \]
             </p>
-            <p>We fitted this in <code>brms</code> using the binomial likelihood with:</p>
+            <p>We fitted this in Bayesian R package <code>brms</code> using the binomial likelihood with:</p>
             <pre><code>events | trials(total) ~ 0 + study + treat + (treat12 - 1 | study)</code></pre>
             <ul>
               <li><code>study</code>: fixed study-specific baseline log-odds (\(\gamma_i\)).</li>
@@ -203,7 +208,6 @@
               Observed OR values are unshrunken two-by-two estimates from <code>metafor::escalc(measure = "OR")</code>,
               shown as point estimate and Wald 95% CI.
             </p>
-            <p>Credible intervals (CrI) are reported as highest-density intervals.</p>
           </div>
         </details>
       </section>
@@ -308,6 +312,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260214-15"></script>
+    <script type="module" src="./app.js?v=20260214-16"></script>
   </body>
 </html>
