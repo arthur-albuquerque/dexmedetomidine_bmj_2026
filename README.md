@@ -1,5 +1,7 @@
 # Dexmedetomidine Evidence Atlas (BMJ 2026)
 
+- Live app: [https://arthur-albuquerque.github.io/dexmedetomidine_bmj_2026/](https://arthur-albuquerque.github.io/dexmedetomidine_bmj_2026/)
+
 This app helps physicians quickly interpret how dexmedetomidine was administered across trials from the BMJ 2026 review dataset.
 
 It is designed to answer practical clinical questions such as:
@@ -15,14 +17,6 @@ Reference review:
 - DOI: [10.1136/bmj-2025-085539](https://doi.org/10.1136/bmj-2025-085539)
 - BMJ page: [https://www.bmj.com/content/392/bmj-2025-085539](https://www.bmj.com/content/392/bmj-2025-085539)
 
-## View the app
-
-- Live app: [https://arthur-albuquerque.github.io/dexmedetomidine_bmj_2026/](https://arthur-albuquerque.github.io/dexmedetomidine_bmj_2026/)
-
-## Note
-
-This app was built using GPT-5.3-Codex.
-
 ## Bayesian Model Script
 
 The `brms` model fitting script is at:
@@ -30,3 +24,7 @@ The `brms` model fitting script is at:
 
 This script fits the Jackson Model 4 adaptation and writes model outputs to:
 - `data/processed/model4_brms/`
+
+## Note
+
+This app was built using GPT-5.3-Codex.
