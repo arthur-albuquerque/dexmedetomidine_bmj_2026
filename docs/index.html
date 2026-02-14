@@ -145,7 +145,7 @@
       >
         <h2>Bayesian Meta-Analysis</h2>
         <p class="meta-note">
-          Uses a single pre-fitted Bayesian model. Filters control which study rows are shown; the pooled effect stays fixed from the full model fit.
+          This panel reuses one Bayesian model fitted on the full eligible dataset. Filters update which trial rows are displayed in the forest plot, while the pooled effect remains the same full-dataset estimate.
         </p>
         <div id="meta-coverage-note" class="meta-coverage-note" role="status" aria-live="polite"></div>
         <div id="meta-forest" class="meta-forest-wrap"></div>
@@ -172,7 +172,7 @@
               \log(\mathrm{OR}_i)=\theta + u_i
               \]
             </p>
-            <p>We fitted this in <code>brms</code> with:</p>
+            <p>We fitted this in <code>brms</code> using the binomial likelihood with:</p>
             <pre><code>events | trials(total) ~ 0 + study + treat + (treat12 - 1 | study)</code></pre>
             <ul>
               <li><code>study</code>: fixed study-specific baseline log-odds (\(\gamma_i\)).</li>
@@ -183,9 +183,9 @@
             <p>Priors used in the fitted model:</p>
             <p class="meta-equation">
               \[
-              b_{\text{study}}\sim\mathcal{N}(0,1.5),\qquad
-              b_{\text{treat1}}\sim\mathcal{N}(0,0.82),\qquad
-              \tau\sim\mathrm{Lognormal}(-1.855,\,0.87)
+              b_{\text{study}}\sim\mathcal{N}(0,1.5^2),\qquad
+              b_{\text{treat1}}\sim\mathcal{N}(0,0.82^2),\qquad
+              \tau\sim\mathrm{Log\text{-}Normal}(-1.855,\,0.87^2)
               \]
             </p>
             <p>
@@ -203,6 +203,7 @@
               Observed OR values are unshrunken two-by-two estimates from <code>metafor::escalc(measure = "OR")</code>,
               shown as point estimate and Wald 95% CI.
             </p>
+            <p>Credible intervals (CrI) are reported as highest-density intervals.</p>
           </div>
         </details>
       </section>
@@ -307,6 +308,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260214-14"></script>
+    <script type="module" src="./app.js?v=20260214-15"></script>
   </body>
 </html>

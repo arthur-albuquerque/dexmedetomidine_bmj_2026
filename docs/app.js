@@ -32,7 +32,7 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260214-14';
+const DATA_VERSION = '20260214-15';
 const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
 const DEFAULT_META_X_LIMITS = [0.1, 3.5];
 const DEFAULT_META_X_TICKS = [0.1, 0.3, 0.7, 1, 3];
@@ -1102,7 +1102,7 @@ function renderMetaForest() {
   grid.className = 'meta-forest-grid';
 
   grid.appendChild(makeMetaCell('Study', ['meta-cell-head']));
-  grid.appendChild(makeMetaCell('Treatment\n(Events/Total)', ['meta-cell-head']));
+  grid.appendChild(makeMetaCell('Dexmedetomidine\n(Events/Total)', ['meta-cell-head']));
   grid.appendChild(makeMetaCell('Control\n(Events/Total)', ['meta-cell-head']));
 
   const plotHead = document.createElement('div');
@@ -1137,8 +1137,8 @@ function renderMetaForest() {
     grid.appendChild(makeMetaCell(formatOrInterval(row.crudeOr, row.crudeOrLow, row.crudeOrHigh)));
   });
 
-  const pooledCountTreatmentCompact = `${formatCounts(pooledRow.dexEvents, pooledRow.dexTotal)} (all: ${state.meta.allCounts.dex_events})`;
-  const pooledCountControlCompact = `${formatCounts(pooledRow.controlEvents, pooledRow.controlTotal)} (all: ${state.meta.allCounts.control_events})`;
+  const pooledCountTreatmentCompact = formatCounts(pooledRow.dexEvents, pooledRow.dexTotal);
+  const pooledCountControlCompact = formatCounts(pooledRow.controlEvents, pooledRow.controlTotal);
 
   grid.appendChild(makeMetaCell(pooledRow.displayLabel, ['meta-study-col', 'meta-row-pooled']));
   grid.appendChild(makeMetaCell(pooledCountTreatmentCompact, ['meta-count-col', 'meta-row-pooled']));
@@ -1189,14 +1189,19 @@ function renderMetaForest() {
   footnote.className = 'meta-cell meta-footnote-row meta-inspiration';
   footnote.innerHTML = `
     <span class="meta-inspiration-block">
-      Data visualization inspired by
+      Data visualization inspired by the
       <br />
-      <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">the bayesfoRest package</a>
+      <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">bayesfoRest package</a>
     </span>
   `;
   grid.appendChild(footnote);
 
   host.appendChild(grid);
+
+  const symbolNote = document.createElement('p');
+  symbolNote.className = 'meta-symbol-note';
+  symbolNote.textContent = 'Dots depict the median Observed OR. Purple curves depict study-specific shrinkage marginal posterior distributions. Vertical lines show the pooled median and 95% CrI limits.';
+  host.appendChild(symbolNote);
 }
 
 function rerender() {

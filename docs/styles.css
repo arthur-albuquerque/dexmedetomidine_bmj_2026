@@ -35,6 +35,8 @@ body.theme-dark {
   --hero-a: #061726;
   --hero-b: #0a3a5b;
   --hero-c: #1f6a73;
+  --brand: #67b2ff;
+  --brand-dark: #9fd1ff;
 }
 
 body {
@@ -709,6 +711,13 @@ tbody tr:nth-child(even) {
 .meta-inspiration a:hover {
   color: var(--brand);
   text-decoration: underline;
+}
+
+.meta-symbol-note {
+  margin: 0.42rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.3;
 }
 
 .meta-explainer {
