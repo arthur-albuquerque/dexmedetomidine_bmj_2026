@@ -22,3 +22,11 @@ Reference review:
 ## Note
 
 This app was built using GPT-5.3-Codex.
+
+## Bayesian Model Script
+
+The `brms` model fitting script is at:
+- `scripts/model4_brms.R`
+
+This script fits the Jackson Model 4 adaptation and writes model outputs to:
+- `data/processed/model4_brms/`
