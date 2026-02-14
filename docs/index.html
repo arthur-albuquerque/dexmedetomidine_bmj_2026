@@ -11,6 +11,16 @@
       rel="stylesheet"
     />
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)'], ['$', '$']],
+          displayMath: [['\\[', '\\]']],
+          processEscapes: true
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -139,6 +149,62 @@
         </p>
         <div id="meta-coverage-note" class="meta-coverage-note" role="status" aria-live="polite"></div>
         <div id="meta-forest" class="meta-forest-wrap"></div>
+        <details class="meta-explainer">
+          <summary>Explanation about the Bayesian model</summary>
+          <div class="meta-explainer-body">
+            <p>
+              We adapted Model 4 from Jackson et al.:
+              <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.7588" target="_blank" rel="noopener noreferrer">
+                A comparison of seven random-effects models for meta-analyses that estimate the summary odds ratio
+              </a>
+              (DOI: 10.1002/sim.7588).
+            </p>
+            <p>Model structure:</p>
+            <p class="meta-equation">
+              \[
+              y_{ij}\sim \mathrm{Binomial}(n_{ij}, p_{ij}), \qquad
+              \mathrm{logit}(p_{ij})=\gamma_i + \theta\,t_{ij} + u_i\,z_{ij}
+              \]
+            </p>
+            <p class="meta-equation">
+              \[
+              z_{ij}=t_{ij}-0.5,\qquad u_i\sim\mathcal{N}(0,\tau^2),\qquad
+              \log(\mathrm{OR}_i)=\theta + u_i
+              \]
+            </p>
+            <p>We fitted this in <code>brms</code> with:</p>
+            <pre><code>events | trials(total) ~ 0 + study + treat + (treat12 - 1 | study)</code></pre>
+            <ul>
+              <li><code>study</code>: fixed study-specific baseline log-odds (\(\gamma_i\)).</li>
+              <li><code>treat</code>: treatment indicator (0 = control, 1 = dexmedetomidine), with pooled log-OR (\(\theta\)).</li>
+              <li><code>treat12</code>: centered treatment coding (\(treat - 0.5\)), so control = \(-0.5\), dexmedetomidine = \(+0.5\).</li>
+              <li><code>(treat12 - 1 | study)</code>: study-level random treatment deviation (\(u_i\)), with SD \(\tau\).</li>
+            </ul>
+            <p>Priors used in the fitted model:</p>
+            <p class="meta-equation">
+              \[
+              b_{\text{study}}\sim\mathcal{N}(0,1.5),\qquad
+              b_{\text{treat1}}\sim\mathcal{N}(0,0.82),\qquad
+              \tau\sim\mathrm{Lognormal}(-1.855,\,0.87)
+              \]
+            </p>
+            <p>
+              For heterogeneity, we used
+              <code>bayesmeta::TurnerEtAlPrior(outcome = "cause-specific mortality / major morbidity event / composite (mortality or morbidity)", comparator1 = "pharmacological", comparator2 = "placebo / control")</code>
+              from Turner et al. (2015):
+              <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.6381" target="_blank" rel="noopener noreferrer">
+                Predictive distributions for between-study heterogeneity and simple methods for their application in Bayesian meta-analysis
+              </a>
+              (DOI: 10.1002/sim.6381).
+            </p>
+            <p>
+              Shrinkage study-specific effects are computed from posterior draws as
+              \(\mathrm{OR}_i=\exp(\theta+u_i)\) and summarized with median and 95% CrI.
+              Observed OR values are unshrunken two-by-two estimates from <code>metafor::escalc(measure = "OR")</code>,
+              shown as point estimate and Wald 95% CI.
+            </p>
+          </div>
+        </details>
       </section>
 
       <section class="panel" aria-label="Trial table">
@@ -241,6 +307,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js?v=20260214-13"></script>
+    <script type="module" src="./app.js?v=20260214-14"></script>
   </body>
 </html>

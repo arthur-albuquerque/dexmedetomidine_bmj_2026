@@ -32,14 +32,14 @@ const DOSE_BAND_LABELS = {
 
 const DOSE_BAND_ORDER = ['0-0.2', '0.2-0.5', '0.5-0.8', '>0.8', 'bolus_only', 'not_weight_normalized', 'not_reported'];
 const THEME_KEY = 'dex-theme';
-const DATA_VERSION = '20260214-13';
+const DATA_VERSION = '20260214-14';
 const TRIAL_SUFFIX_PATTERN = /_p\d+$/i;
 const DEFAULT_META_X_LIMITS = [0.1, 3.5];
-const DEFAULT_META_X_TICKS = [0.1, 0.3, 1, 3];
-const META_PLOT_WIDTH = 340;
+const DEFAULT_META_X_TICKS = [0.1, 0.3, 0.7, 1, 3];
+const META_PLOT_WIDTH = 300;
 const META_PLOT_HEIGHT = 34;
-const META_PLOT_PAD_LEFT = 22;
-const META_PLOT_PAD_RIGHT = 16;
+const META_PLOT_PAD_LEFT = 18;
+const META_PLOT_PAD_RIGHT = 12;
 
 const state = {
   trials: [],
@@ -544,9 +544,10 @@ function parseMetaBundle(rawBundle) {
   const xLimits = Array.isArray(rawBundle.x_limits_or) && rawBundle.x_limits_or.length === 2
     ? rawBundle.x_limits_or.map((value) => Number(value))
     : DEFAULT_META_X_LIMITS;
-  const xTicks = Array.isArray(rawBundle.x_ticks_or) && rawBundle.x_ticks_or.length > 1
+  const xTicksRaw = Array.isArray(rawBundle.x_ticks_or) && rawBundle.x_ticks_or.length > 1
     ? rawBundle.x_ticks_or.map((value) => Number(value)).filter((value) => Number.isFinite(value) && value > 0)
     : DEFAULT_META_X_TICKS;
+  const xTicks = [...new Set([...xTicksRaw, 0.7])].sort((a, b) => a - b);
 
   const rows = rawBundle.rows
     .map((row) => {
@@ -769,10 +770,10 @@ function buildMetaRowPlotSvg(rowConfig) {
   const width = META_PLOT_WIDTH;
   const height = META_PLOT_HEIGHT;
   const baselineY = Math.round(height * 0.56);
-  const amplitude = isPooled ? 12.6 : 8.8;
+  const amplitude = isPooled ? 9.8 : 8.8;
   const [xMin, xMax] = xLimitsOr;
   const scaleX = metaXScaleFactory(xLimitsOr);
-  const densityNorm = isPooled ? smoothDensity(row.densityNorm || [], 7) : row.densityNorm || [];
+  const densityNorm = isPooled ? smoothDensity(row.densityNorm || [], 5) : row.densityNorm || [];
 
   const svg = createSvgNode('svg', {
     class: 'meta-plot-svg',
@@ -955,7 +956,7 @@ function buildMetaAxisSvg({ xLimitsOr, xTicksOr }) {
     x: width / 2,
     y: height - 5,
     fill: palette.axisText,
-    'font-size': '15.5',
+    'font-size': '16.8',
     'font-weight': '500',
     'text-anchor': 'middle',
     'font-family': 'IBM Plex Sans, sans-serif'
@@ -1136,18 +1137,12 @@ function renderMetaForest() {
     grid.appendChild(makeMetaCell(formatOrInterval(row.crudeOr, row.crudeOrLow, row.crudeOrHigh)));
   });
 
-  const pooledCountLabelTreatment = `${formatCounts(pooledRow.dexEvents, pooledRow.dexTotal)}  (all: ${formatCounts(
-    state.meta.allCounts.dex_events,
-    state.meta.allCounts.dex_total
-  )})`;
-  const pooledCountLabelControl = `${formatCounts(pooledRow.controlEvents, pooledRow.controlTotal)}  (all: ${formatCounts(
-    state.meta.allCounts.control_events,
-    state.meta.allCounts.control_total
-  )})`;
+  const pooledCountTreatmentCompact = `${formatCounts(pooledRow.dexEvents, pooledRow.dexTotal)} (all: ${state.meta.allCounts.dex_events})`;
+  const pooledCountControlCompact = `${formatCounts(pooledRow.controlEvents, pooledRow.controlTotal)} (all: ${state.meta.allCounts.control_events})`;
 
   grid.appendChild(makeMetaCell(pooledRow.displayLabel, ['meta-study-col', 'meta-row-pooled']));
-  grid.appendChild(makeMetaCell(pooledCountLabelTreatment, ['meta-count-col', 'meta-row-pooled']));
-  grid.appendChild(makeMetaCell(pooledCountLabelControl, ['meta-count-col', 'meta-row-pooled']));
+  grid.appendChild(makeMetaCell(pooledCountTreatmentCompact, ['meta-count-col', 'meta-row-pooled']));
+  grid.appendChild(makeMetaCell(pooledCountControlCompact, ['meta-count-col', 'meta-row-pooled']));
   grid.appendChild(
     makeMetaPlotCell(
       buildMetaRowPlotSvg({
@@ -1192,7 +1187,13 @@ function renderMetaForest() {
 
   const footnote = document.createElement('div');
   footnote.className = 'meta-cell meta-footnote-row meta-inspiration';
-  footnote.innerHTML = 'Data visualization inspired by the <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">bayesfoRest package</a>';
+  footnote.innerHTML = `
+    <span class="meta-inspiration-block">
+      Data visualization inspired by
+      <br />
+      <a href="https://blmoran.github.io/bayesfoRest/index.html" target="_blank" rel="noopener noreferrer">the bayesfoRest package</a>
+    </span>
+  `;
   grid.appendChild(footnote);
 
   host.appendChild(grid);
